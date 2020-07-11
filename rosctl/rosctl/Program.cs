@@ -1019,11 +1019,13 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
+                            MKwireless mKwireless = new MKwireless();
                             string data = s.Substring(16);
                             foreach (var d in GetDictionary(data))
                             {
-                                Console.WriteLine("IpAddr:{0},{1}:{2}", d.Key, d.Value);
+                                GetWirelessInfo(d.Key, d.Value, ref mKwireless);
                             }
+                            Console.WriteLine("IpAddr:{0},Uptime:{1},Rx/Tx-Rdate:{2}/{3},Rx/Tx-CCQ:{4}/{5},STN:{6}", IpAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
                         }
                     }
                 }
@@ -1042,11 +1044,13 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
+                            MKresource mKresource = new MKresource();
                             string data = s.Substring(16);
                             foreach (var d in GetDictionary(data))
                             {
-                                Console.WriteLine("IPAddr:{0},{1}:{2}", IpAddr, d.Key, d.Value);
+                                GetResourceInfo(d.Key, d.Value, ref mKresource); 
                             }
+                            Console.WriteLine("IpAddr:{0},Uptime:{1},Version:{2},Cpu-Load:{3}",IpAddr,mKresource.Uptime,mKresource.Version,mKresource.Cpu_Load);
                         }
                     }
                 }
@@ -1060,6 +1064,75 @@ namespace rosctl
                 Console.WriteLine("IPAddr:{0},Can't Login", IpAddr);
             }
             mk.Close();
+        }
+        static void GetWirelessInfo(string key,string value,ref MKwireless mKwireless)
+        {
+            switch (key)
+            {
+                case "uptime":
+                    mKwireless.Uptime = value;
+                    break;
+                case "rx-rate":
+                    mKwireless.Rx_Rate = value;
+                    break;
+                case "tx-rate":
+                    mKwireless.Tx_Rate = value;
+                    break;
+                case "rx-ccq":
+                    mKwireless.Rx_CCQ = value;
+                    break;
+                case "tx-ccq":
+                    mKwireless.Tx_CCQ = value;
+                    break;
+                case "signal-to-noise":
+                    mKwireless.Signal_To_Noise = value;
+                    break;
+                case "signal-strength":
+                    mKwireless.Signal_Strength = value;
+                    break;
+                case "signal-strength-ch0":
+                    mKwireless.Signal_Strength_CH0 = value;
+                    break;
+                case "signal-strength-ch1":
+                    mKwireless.Signal_Strength_CH1 = value;
+                    break;
+                case "tx-signal-strength":
+                    mKwireless.Tx_Signal_Strength = value;
+                    break;
+                case "tx-signal-strength-ch0":
+                    mKwireless.Tx_Signal_Strength_CH0 = value;
+                    break;
+                case "tx-signal-strength-ch1":
+                    mKwireless.Tx_Signal_Strength_CH1 = value;
+                    break;
+            }
+        }
+        static void GetResourceInfo(string key,string value ,ref MKresource mKresource)
+        {
+            switch(key)
+            {
+                case "uptime":
+                    mKresource.Uptime = value;
+                    break;
+                case "version":
+                    mKresource.Version = value;
+                    break;
+                case "cpu-load":
+                    mKresource.Cpu_Load = value;
+                    break;
+                case "free-memory":
+                    mKresource.Free_Memory = value;
+                    break;
+                case "total-memory":
+                    mKresource.Total_Memory = value;
+                    break;
+                case "free-hdd-space":
+                    mKresource.Free_Hdd_Space = value;
+                    break;
+                case "total-hdd-space":
+                    mKresource.Total_Hdd_Space = value;
+                    break;
+            }    
         }
         static Dictionary<string, string> GetDictionary(string data)
         {
