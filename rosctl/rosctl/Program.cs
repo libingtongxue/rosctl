@@ -1380,8 +1380,9 @@ namespace rosctl
             while (true)
             {
                 tmp[3] = (byte)connection.ReadByte();
-                if (tmp[3] == 220) tmp[3] = (byte)connection.ReadByte(); //it sometimes happend to me that 
-                                                                         //mikrotik send 220 as some kind of "bonus" between words, this fixed things, not sure about it though
+                if (tmp[3] == 220) tmp[3] = (byte)connection.ReadByte(); 
+                //it sometimes happend to me that                 
+                //mikrotik send 220 as some kind of "bonus" between words, this fixed things, not sure about it though
                 if (tmp[3] == 0)
                 {
                     output.Add(o);
