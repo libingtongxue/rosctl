@@ -992,11 +992,13 @@ namespace rosctl
                     mk.Send(".tag=ethernet", true);
                     foreach (string s in mk.Read())
                     {
+                        MKethernet mKethernet = new MKethernet();
                         string data = s.Substring(16);
                         foreach (var d in GetDictionary(data))
                         {
-                            Console.WriteLine("IPAddr:{0},{1}:{2}", IpAddr, d.Key, d.Value);
+                            GetEthernetInfo(d.Key, d.Value, ref mKethernet);
                         }
+                        Console.WriteLine("IpAddr:{0},Name:{1},Speed:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
                     }
                 }
                 if (wireless)
@@ -1064,6 +1066,30 @@ namespace rosctl
                 Console.WriteLine("IPAddr:{0},Can't Login", IpAddr);
             }
             mk.Close();
+        }
+        static void GetEthernetInfo(string key,string value,ref MKethernet mKethernet)
+        {
+            switch (key)
+            {
+                case "name":
+                    mKethernet.Name = value;
+                    break;
+                case "speed":
+                    mKethernet.Speed = value;
+                    break;
+                case "rx-bytes":
+                    mKethernet.Rx_Bytes = value;
+                    break;
+                case "tx-bytes":
+                    mKethernet.Tx_Bytes = value;
+                    break;
+                case "rx-packet":
+                    mKethernet.Rx_Packet = value;
+                    break;
+                case "tx-packet":
+                    mKethernet.Tx_Packet = value;
+                    break;
+            }
         }
         static void GetWirelessInfo(string key,string value,ref MKwireless mKwireless)
         {
