@@ -25,7 +25,14 @@ namespace rosctl
         {
             if (!Login_v2(username, password))
             {
-                return Login_v1(username, password);
+                if (Login_v1(username, password))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
