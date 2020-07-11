@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rosctl", "rosctl\rosctl.csproj", "{2B84E1BF-E431-4768-96E7-BCA41B82F8F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B84E1BF-E431-4768-96E7-BCA41B82F8F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B84E1BF-E431-4768-96E7-BCA41B82F8F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B84E1BF-E431-4768-96E7-BCA41B82F8F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B84E1BF-E431-4768-96E7-BCA41B82F8F1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FFC408A8-987B-4EC0-A394-7420F43C6A33}
+	EndGlobalSection
+EndGlobal
