@@ -21,6 +21,7 @@ namespace rosctl
         static bool ethernet = false;
         static bool resource = false;
         static bool neighbor = false;
+        static bool romon = false;
         static void Main(string[] args)
         {
             if (args.Length > 2)
@@ -170,6 +171,10 @@ namespace rosctl
                         else if (args[i].StartsWith("--neighbor"))
                         {
                             neighbor = true;
+                        }
+                        else if (args[i].StartsWith("--romon"))
+                        {
+                            romon = true;
                         }
                     }
                     mndp.Start();
@@ -392,6 +397,7 @@ namespace rosctl
             Console.WriteLine("rosctl mndp -u root -p password --resource");
             Console.WriteLine("rosctl mndp -u root -p password --wireless");
             Console.WriteLine("rosctl mndp -u root -p password --neighbor");
+            Console.WriteLine("rosctl mndp -u root -p password --roman");
             Console.WriteLine("rosctl mndp -u root -p password --new password");
             Console.WriteLine("rosctl mndp -u root -p password --logging 192.168.1.2");
             Console.WriteLine("rosctl mndp -u root -p password --snmp 192.168.1.2");
@@ -764,33 +770,7 @@ namespace rosctl
                             }
                         }
                     }
-                    mk.Send("/tool/romon/print");
-                    mk.Send("=.proplist=enabled");
-                    mk.Send(".tag=romon", true);
-                    bool romon = false;
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            if (s.Substring(22) != "true")
-                            {
-                                romon = true;
-                            }
-                        }
-                    }
-                    if (romon)
-                    {
-                        mk.Send("/tool/romon/set");
-                        mk.Send("=enabled=yes");
-                        mk.Send(".tag=romon", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
-                            {
-                                Console.WriteLine("IpAddr:{0},romon", IpAddr);
-                            }
-                        }
-                    }
+                    //
                     mk.Send("/system/watchdog/set");
                     mk.Send("=watchdog-timer=no");
                     mk.Send(".tag=watchdog", true);
@@ -827,16 +807,16 @@ namespace rosctl
                     mk.Send("?name=www-ssl");
                     mk.Send("=.proplist=.id");
                     mk.Send(".tag=service-wwwssl", true);
-                    string swwwssl = "";
+                    string wwwssl_id = "";
                     foreach (string s in mk.Read())
                     {
                         if (s.StartsWith("!re"))
                         {
-                            swwwssl = s.Substring(22);
+                            wwwssl_id = s.Substring(22);
                         }
                     }
                     mk.Send("/ip/service/set");
-                    mk.Send(swwwssl);
+                    mk.Send(wwwssl_id);
                     mk.Send("=disabled=yes");
                     mk.Send(".tag=wwwssl", true);
                     foreach (string s in mk.Read())
@@ -851,16 +831,16 @@ namespace rosctl
                     mk.Send("?name=www");
                     mk.Send("=.proplist=.id");
                     mk.Send(".tag=service-www", true);
-                    string swww = "";
+                    string www_id = "";
                     foreach (string s in mk.Read())
                     {
                         if (s.StartsWith("!re"))
                         {
-                            swww = s.Substring(19);
+                            www_id = s.Substring(19);
                         }
                     }
                     mk.Send("/ip/service/set");
-                    mk.Send(swww);
+                    mk.Send(www_id);
                     mk.Send("=disabled=yes");
                     mk.Send(".tag=www", true);
                     foreach (string s in mk.Read())
@@ -875,16 +855,16 @@ namespace rosctl
                     mk.Send("?name=telnet");
                     mk.Send("=.proplist=.id");
                     mk.Send(".tag=service-telnet", true);
-                    string stelnet = "";
+                    string telnet_id = "";
                     foreach (string s in mk.Read())
                     {
                         if (s.StartsWith("!re"))
                         {
-                            stelnet = s.Substring(22);
+                            telnet_id = s.Substring(22);
                         }
                     }
                     mk.Send("/ip/service/set");
-                    mk.Send(stelnet);
+                    mk.Send(telnet_id);
                     mk.Send("=disabled=yes");
                     mk.Send(".tag=telnet", true);
                     foreach (string s in mk.Read())
@@ -899,16 +879,16 @@ namespace rosctl
                     mk.Send("?name=ssh");
                     mk.Send("=.proplist=.id");
                     mk.Send(".tag=service-ssh", true);
-                    string sssh = "";
+                    string ssh_id= "";
                     foreach (string s in mk.Read())
                     {
                         if (s.StartsWith("!re"))
                         {
-                            sssh = s.Substring(19);
+                            ssh_id = s.Substring(19);
                         }
                     }
                     mk.Send("/ip/service/set");
-                    mk.Send(sssh);
+                    mk.Send(ssh_id);
                     mk.Send("=disabled=yes");
                     mk.Send(".tag=ssh", true);
                     foreach (string s in mk.Read())
@@ -923,16 +903,16 @@ namespace rosctl
                     mk.Send("?name=ftp");
                     mk.Send("=.proplist=.id");
                     mk.Send(".tag=service-ftp", true);
-                    string sftp = "";
+                    string ftp_id = "";
                     foreach (string s in mk.Read())
                     {
                         if (s.StartsWith("!re"))
                         {
-                            sftp = s.Substring(19);
+                            ftp_id = s.Substring(19);
                         }
                     }
                     mk.Send("/ip/service/set");
-                    mk.Send(sftp);
+                    mk.Send(ftp_id);
                     mk.Send("=disabled=yes");
                     mk.Send(".tag=ftp", true);
                     foreach (string s in mk.Read())
@@ -947,16 +927,16 @@ namespace rosctl
                     mk.Send("?name=api-ssl");
                     mk.Send("=.proplist=.id");
                     mk.Send(".tag=service-apissl", true);
-                    string sapissl = "";
+                    string apissl_id = "";
                     foreach (string s in mk.Read())
                     {
                         if (s.StartsWith("!re"))
                         {
-                            sapissl = s.Substring(22);
+                            apissl_id = s.Substring(22);
                         }
                     }
                     mk.Send("/ip/service/set");
-                    mk.Send(sapissl);
+                    mk.Send(apissl_id);
                     mk.Send("=disabled=yes");
                     mk.Send(".tag=apissl", true);
                     foreach (string s in mk.Read())
@@ -1053,6 +1033,36 @@ namespace rosctl
                                 GetResourceInfo(d.Key, d.Value, ref mKresource); 
                             }
                             Console.WriteLine("IpAddr:{0},Uptime:{1},Version:{2},Cpu-Load:{3}",IpAddr,mKresource.Uptime,mKresource.Version,mKresource.Cpu_Load);
+                        }
+                    }
+                }
+                if(romon)
+                {
+                    mk.Send("/tool/romon/print");
+                    mk.Send("=.proplist=enabled");
+                    mk.Send(".tag=romon", true);
+                    bool romonFlag = false;
+                    foreach (string s in mk.Read())
+                    {
+                        if (s.StartsWith("!re"))
+                        {
+                            if (s.Substring(22) != "true")
+                            {
+                                romon = true;
+                            }
+                        }
+                    }
+                    if (romonFlag)
+                    {
+                        mk.Send("/tool/romon/set");
+                        mk.Send("=enabled=yes");
+                        mk.Send(".tag=romon", true);
+                        foreach (string s in mk.Read())
+                        {
+                            if (s.StartsWith("!done"))
+                            {
+                                Console.WriteLine("IpAddr:{0},romon", IpAddr);
+                            }
                         }
                     }
                 }
