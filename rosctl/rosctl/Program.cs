@@ -9,7 +9,7 @@ namespace rosctl
     {
         static readonly Timer Timer = new Timer(Timer_Callback, null, Timeout.Infinite, Timeout.Infinite);
         static readonly List<string> IpAddrs = new List<string>();
-        static MKmndp mndp = new MKmndp();
+        static readonly MKmndp mndp = new MKmndp();
         static string username = "";
         static string password = "";
         static string newPassword = "";
@@ -24,170 +24,171 @@ namespace rosctl
         static bool romon = false;
         static void Main(string[] args)
         {
-            if (args.Length > 2)
+
+            if (args[0] == "mndp")
             {
-                if (args[0] == "mndp")
+                for (int i = 1; i < args.Length; i++)
                 {
-                    for (int i = 1; i < args.Length; i++)
+                    if (args[i].StartsWith("-u"))
                     {
-                        if (args[i].StartsWith("-u"))
+                        string st = args[i].Substring(2);
+                        if (st.Length == 0)
                         {
-                            string st = args[i].Substring(2);
-                            if (st.Length == 0)
+                            int t = i + 1;
+                            if (t >= args.Length)
                             {
-                                int t = i + 1;
-                                if (t >= args.Length)
-                                {
-                                    Console.WriteLine("Username Is Null");
-                                }
-                                else
-                                {
-                                    username = args[t];
-                                }
+                                Console.WriteLine("Username Is Null");
                             }
                             else
                             {
-                                username = st;
+                                username = args[t];
                             }
                         }
-                        else if (args[i].StartsWith("-p"))
+                        else
                         {
-                            string st = args[i].Substring(2);
-                            if (st.Length == 0)
-                            {
-                                int t = i + 1;
-                                if (t >= args.Length)
-                                {
-                                    Console.WriteLine("Password Is Null");
-                                }
-                                else
-                                {
-                                    password = args[t];
-                                }
-                            }
-                            else
-                            {
-                                password = st;
-                            }
-                        }
-                        else if (args[i].StartsWith("--auto"))
-                        {
-                            auto = true;
-                        }
-                        else if (args[i].StartsWith("--new"))
-                        {
-                            string st = args[i].Substring(5);
-                            if (st.Length == 0)
-                            {
-                                int t = i + 1;
-                                if (t >= args.Length)
-                                {
-                                    Console.WriteLine("NewPassword Is Null");
-                                }
-                                else
-                                {
-                                    newPassword = args[t];
-                                }
-                            }
-                            else
-                            {
-                                newPassword = st;
-                            }
-
-                        }
-                        else if (args[i].StartsWith("--logging"))
-                        {
-                            string st = args[i].Substring(9);
-                            if (st.Length == 0)
-                            {
-                                int t = i + 1;
-                                if (t >= args.Length)
-                                {
-                                    Console.WriteLine("Logging Is Null");
-                                }
-                                else
-                                {
-                                    logging = args[t];
-                                }
-                            }
-                            else
-                            {
-                                logging = st;
-                            }
-
-                        }
-                        else if (args[i].StartsWith("--snmp"))
-                        {
-                            string st = args[i].Substring(6);
-                            if (st.Length == 0)
-                            {
-                                int t = i + 1;
-                                if (t >= args.Length)
-                                {
-                                    Console.WriteLine("SNMP Is Null");
-                                }
-                                else
-                                {
-                                    snmp = args[t];
-                                }
-                            }
-                            else
-                            {
-                                snmp = st;
-                            }
-                        }
-                        else if (args[i].StartsWith("--ntp"))
-                        {
-                            string st = args[i].Substring(5);
-                            if (st.Length == 0)
-                            {
-                                int t = i + 1;
-                                if (t >= args.Length)
-                                {
-                                    Console.WriteLine("Ntp Is Null");
-                                }
-                                else
-                                {
-                                    ntp = args[t];
-                                }
-                            }
-                            else
-                            {
-                                ntp = st;
-                            }
-                        }
-                        else if (args[i].StartsWith("--ethernet"))
-                        {
-                            ethernet = true;
-                        }
-                        else if (args[i].StartsWith("--resource"))
-                        {
-                            resource = true;
-                        }
-                        else if (args[i].StartsWith("--wireless"))
-                        {
-                            wireless = true;
-                        }
-                        else if (args[i].StartsWith("--neighbor"))
-                        {
-                            neighbor = true;
-                        }
-                        else if (args[i].StartsWith("--romon"))
-                        {
-                            romon = true;
+                            username = st;
                         }
                     }
-                    mndp.Start();
-                    Timer.Change(0, 10000);
-                    while (!Console.KeyAvailable)
+                    else if (args[i].StartsWith("-p"))
                     {
-                        Thread.Sleep(100);
+                        string st = args[i].Substring(2);
+                        if (st.Length == 0)
+                        {
+                            int t = i + 1;
+                            if (t >= args.Length)
+                            {
+                                Console.WriteLine("Password Is Null");
+                            }
+                            else
+                            {
+                                password = args[t];
+                            }
+                        }
+                        else
+                        {
+                            password = st;
+                        }
                     }
-                    Timer.Change(Timeout.Infinite, Timeout.Infinite);
-                    Timer.Dispose();
-                    mndp.Stop();
+                    else if (args[i].StartsWith("--auto"))
+                    {
+                        auto = true;
+                    }
+                    else if (args[i].StartsWith("--new"))
+                    {
+                        string st = args[i].Substring(5);
+                        if (st.Length == 0)
+                        {
+                            int t = i + 1;
+                            if (t >= args.Length)
+                            {
+                                Console.WriteLine("NewPassword Is Null");
+                            }
+                            else
+                            {
+                                newPassword = args[t];
+                            }
+                        }
+                        else
+                        {
+                            newPassword = st;
+                        }
+
+                    }
+                    else if (args[i].StartsWith("--logging"))
+                    {
+                        string st = args[i].Substring(9);
+                        if (st.Length == 0)
+                        {
+                            int t = i + 1;
+                            if (t >= args.Length)
+                            {
+                                Console.WriteLine("Logging Is Null");
+                            }
+                            else
+                            {
+                                logging = args[t];
+                            }
+                        }
+                        else
+                        {
+                            logging = st;
+                        }
+
+                    }
+                    else if (args[i].StartsWith("--snmp"))
+                    {
+                        string st = args[i].Substring(6);
+                        if (st.Length == 0)
+                        {
+                            int t = i + 1;
+                            if (t >= args.Length)
+                            {
+                                Console.WriteLine("SNMP Is Null");
+                            }
+                            else
+                            {
+                                snmp = args[t];
+                            }
+                        }
+                        else
+                        {
+                            snmp = st;
+                        }
+                    }
+                    else if (args[i].StartsWith("--ntp"))
+                    {
+                        string st = args[i].Substring(5);
+                        if (st.Length == 0)
+                        {
+                            int t = i + 1;
+                            if (t >= args.Length)
+                            {
+                                Console.WriteLine("Ntp Is Null");
+                            }
+                            else
+                            {
+                                ntp = args[t];
+                            }
+                        }
+                        else
+                        {
+                            ntp = st;
+                        }
+                    }
+                    else if (args[i].StartsWith("--ethernet"))
+                    {
+                        ethernet = true;
+                    }
+                    else if (args[i].StartsWith("--resource"))
+                    {
+                        resource = true;
+                    }
+                    else if (args[i].StartsWith("--wireless"))
+                    {
+                        wireless = true;
+                    }
+                    else if (args[i].StartsWith("--neighbor"))
+                    {
+                        neighbor = true;
+                    }
+                    else if (args[i].StartsWith("--romon"))
+                    {
+                        romon = true;
+                    }
                 }
-                else
+                mndp.Start();
+                Timer.Change(0, 10000);
+                while (!Console.KeyAvailable)
+                {
+                    Thread.Sleep(100);
+                }
+                Timer.Change(Timeout.Infinite, Timeout.Infinite);
+                Timer.Dispose();
+                mndp.Stop();
+            }
+            else
+            {
+                if (args.Length > 2)
                 {
                     for (int i = 0; i < args.Length; i++)
                     {
@@ -219,7 +220,7 @@ namespace rosctl
                                 }
                             }
                         }
-                        if (args[i].StartsWith("-u"))
+                        else if (args[i].StartsWith("-u"))
                         {
                             string st = args[i].Substring(2);
                             if (st.Length == 0)
@@ -303,7 +304,6 @@ namespace rosctl
                             {
                                 logging = st;
                             }
-
                         }
                         else if (args[i].StartsWith("--snmp"))
                         {
@@ -363,28 +363,28 @@ namespace rosctl
                         Timer_MK(s);
                     }
                 }
-            }
-            else if (args.Length == 1)
-            {
-                switch (args[0])
+                else if (args.Length == 1)
                 {
-                    case "--help":
-                        Help();
-                        break;
-                    case "--author":
-                        Author();
-                        break;
-                    case "--copyright":
-                        Copyright();
-                        break;
-                    case "--version":
-                        Version();
-                        break;
+                    switch (args[0])
+                    {
+                        case "--help":
+                            Help();
+                            break;
+                        case "--author":
+                            Author();
+                            break;
+                        case "--copyright":
+                            Copyright();
+                            break;
+                        case "--version":
+                            Version();
+                            break;
+                    }
                 }
-            }
-            else if (args.Length == 0)
-            {
-                Help();
+                else if (args.Length == 0)
+                {
+                    Help();
+                }
             }
         }
         static void Help()
