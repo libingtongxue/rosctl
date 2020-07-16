@@ -22,6 +22,7 @@ namespace rosctl
         static bool resource = false;
         static bool neighbor = false;
         static bool romon = false;
+        static bool health = false;
         static void Main(string[] args)
         {
             if (args.Length > 2)
@@ -397,6 +398,7 @@ namespace rosctl
             Console.WriteLine("rosctl -ip 192.168.1.3 -u root -p password --resource");
             Console.WriteLine("rosctl -ip 192.168.1.3 -u root -p password --ethernet");
             Console.WriteLine("rosctl -ip 192.168.1.3 -u root -p password --wireless");
+            Console.WriteLine("rosctl -ip 192.168.1.3 -u root -p password --health");
             Console.WriteLine("rosctl -ip 192.168.1.3 -u root -p password --new password");
             Console.WriteLine("rosctl -ip 192.168.1.3 -u root -p password --logging 192.168.1.2");
             Console.WriteLine("rosctl -ip 192.168.1.3 -u root -p password --snmp 192.168.1.2");
@@ -934,7 +936,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},neighbor", IpAddr);
+                            Console.WriteLine("Ip地址:{0},neighbor", IpAddr);
                         }
                     }
                 }
@@ -950,13 +952,16 @@ namespace rosctl
                     mk.Send(".tag=ethernet", true);
                     foreach (string s in mk.Read())
                     {
-                        MKethernet mKethernet = new MKethernet();
-                        string data = s.Substring(16);
-                        foreach (var d in GetDictionary(data))
+                        if (s.StartsWith("!re"))
                         {
-                            GetEthernetInfo(d.Key, d.Value, ref mKethernet);
+                            MKethernet mKethernet = new MKethernet();
+                            string data = s.Substring(16);
+                            foreach (var d in GetDictionary(data))
+                            {
+                                GetEthernetInfo(d.Key, d.Value, ref mKethernet);
+                            }
+                            Console.WriteLine("Ip地址:{0},端口:{1},速度:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
                         }
-                        Console.WriteLine("IpAddr:{0},Name:{1},Speed:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
                     }
                 }
                 if (wireless)
@@ -985,7 +990,7 @@ namespace rosctl
                             {
                                 GetWirelessInfo(d.Key, d.Value, ref mKwireless);
                             }
-                            Console.WriteLine("IpAddr:{0},Uptime:{1},Rx/Tx-Rdate:{2}/{3},Rx/Tx-CCQ:{4}/{5},STN:{6}", IpAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
+                            Console.WriteLine("Ip地址:{0},时间:{1},Rx/Tx-Rdate:{2}/{3},Rx/Tx-CCQ:{4}/{5},STN:{6}", IpAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
                         }
                     }
                 }
@@ -1010,7 +1015,7 @@ namespace rosctl
                             {
                                 GetResourceInfo(d.Key, d.Value, ref mKresource); 
                             }
-                            Console.WriteLine("IpAddr:{0},Uptime:{1},Version:{2},Cpu-Load:{3}",IpAddr,mKresource.Uptime,mKresource.Version,mKresource.Cpu_Load);
+                            Console.WriteLine("Ip地址:{0},运行时间:{1},版本:{2},CPU:{3},内存:{4}/{5},闪存:{6}/{7}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, mKresource.Free_Memory, mKresource.Total_Memory, mKresource.Free_Hdd_Space, mKresource.Total_Hdd_Space);
                         }
                     }
                 }
@@ -1039,8 +1044,26 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IpAddr:{0},romon", IpAddr);
+                                Console.WriteLine("Ip地址:{0},romon", IpAddr);
                             }
+                        }
+                    }
+                }
+                if (health)
+                {
+                    mk.Send("/system/health/print");
+                    mk.Send(".tag=health");
+                    foreach(string s in mk.Read())
+                    {
+                        if(s.StartsWith("!re"))
+                        {
+                            MKhealth mKhealth = new MKhealth();
+                            string data = s.Substring(14);
+                            foreach(var d in GetDictionary(data))
+                            {
+                                GetHealthInfo(d.Key, d.Value, ref mKhealth);
+                            }
+                            Console.WriteLine("Ip地址:{0},电压:{1},温度:{2}", IpAddr, mKhealth.Voltage, mKhealth.Temperature);
                         }
                     }
                 }
@@ -1051,9 +1074,21 @@ namespace rosctl
             }
             else
             {
-                Console.WriteLine("IPAddr:{0},Can't Login", IpAddr);
+                Console.WriteLine("Ip地址:{0},账号密码错误", IpAddr);
             }
             mk.Close();
+        }
+        static void GetHealthInfo(string key,string value,ref MKhealth mKhealth)
+        {
+            switch (key)
+            {
+                case "voltage":
+                    mKhealth.Voltage = value;
+                    break;
+                case "temperature":
+                    mKhealth.Temperature = value;
+                    break;
+            }
         }
         static void GetEthernetInfo(string key,string value,ref MKethernet mKethernet)
         {

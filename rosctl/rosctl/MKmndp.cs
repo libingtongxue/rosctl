@@ -32,6 +32,7 @@ namespace rosctl
         bool receiveFlag = true;
         static readonly string sendName = "Send";
         static readonly string receiveName = "Receive";
+        static object lockObj = new object();
         public MKmndp()
         {
             IPBroadcast = new IPEndPoint(IPAddress.Broadcast, Port);
@@ -110,16 +111,22 @@ namespace rosctl
                                 ReadBytes(binaryReader, ref mkInfo);
                                 foreach (MKInfo t in mkInfos)
                                 {
-                                    if (t.MacAddr == mkInfo.MacAddr)
+                                    if (t.IPAddr == mkInfo.IPAddr)
                                     {
                                         int i = mkInfos.IndexOf(t);
-                                        ListRemove lr = new ListRemove(MKInfoRemove);
-                                        lr(i);
+                                        lock (lockObj)
+                                        {
+                                            ListRemove lr = new ListRemove(MKInfoRemove);
+                                            lr(i);
+                                        }
                                         break;
                                     }
                                 }
-                                ListAdd la = new ListAdd(MKInfoAdd);
-                                la(mkInfo);
+                                lock (lockObj)
+                                {
+                                    ListAdd la = new ListAdd(MKInfoAdd);
+                                    la(mkInfo);
+                                }
                             }
                         }
                     }
