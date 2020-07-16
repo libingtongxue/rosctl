@@ -27,12 +27,12 @@ namespace rosctl
         static IPEndPoint IPBroadcast;
         readonly Thread threadSend;
         readonly Thread threadReceive;
-        static readonly List<MKInfo> mkInfos = new List<MKInfo>();
+        static List<MKInfo> mkInfos = new List<MKInfo>();
         bool sendFlag = true;
         bool receiveFlag = true;
         static readonly string sendName = "Send";
         static readonly string receiveName = "Receive";
-        static object lockObj = new object();
+        object lockObj = new object();
         public MKmndp()
         {
             IPBroadcast = new IPEndPoint(IPAddress.Broadcast, Port);
@@ -114,19 +114,13 @@ namespace rosctl
                                     if (t.IPAddr == mkInfo.IPAddr)
                                     {
                                         int i = mkInfos.IndexOf(t);
-                                        lock (lockObj)
-                                        {
-                                            ListRemove lr = new ListRemove(MKInfoRemove);
-                                            lr(i);
-                                        }
+                                        ListRemove lr = new ListRemove(MKInfoRemove);
+                                        lr(i);
                                         break;
                                     }
                                 }
-                                lock (lockObj)
-                                {
-                                    ListAdd la = new ListAdd(MKInfoAdd);
-                                    la(mkInfo);
-                                }
+                                 ListAdd la = new ListAdd(MKInfoAdd);
+                                 la(mkInfo);
                             }
                         }
                     }
@@ -185,21 +179,32 @@ namespace rosctl
         delegate void ListRemove(int i);
         private void MKInfoRemove(int i)
         {
-            mkInfos.RemoveAt(i);
+            lock (lockObj)
+            {
+                mkInfos.RemoveAt(i);
+            }
         }
         delegate void ListAdd(MKInfo m);
         private void MKInfoAdd(MKInfo m)
         {
-            mkInfos.Add(m);
+            lock (lockObj)
+            {
+                mkInfos.Add(m);
+            }
         }
         public List<MKInfo> GetMKInfos
         {
             get
             {
-				lock (lockObj)
-				{
-                    return mkInfos;
-				}
+                lock (lockObj)
+                {
+                     List<MKInfo> tempList = new List<MKInfo>();
+                     foreach(MKInfo m in mkInfos)
+                     {
+                        tempList.Add(m);
+                     }
+                     return tempList;
+                }
             }
         }
         public void Stop()
