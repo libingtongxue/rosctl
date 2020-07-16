@@ -244,6 +244,11 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --ethernet");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --wireless");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --health");
+            Console.WriteLine("rosctl 192.168.1.3 -u root -p password --auto");
+            Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --resource");
+            Console.WriteLine("rosctl 192.168.1.3,192.168.112.4,192.168.112.5 -u root -p password --ethernet");
+            Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --wireless");
+            Console.WriteLine("rosctl 192.168.1.3,192.168.112.4,192.168.112.5 -u root -p password --health");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --new password");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --logging 192.168.1.2");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --snmp 192.168.1.2");
@@ -494,9 +499,10 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s.Substring(26) == "yes")
+                            if (s == "!re.tag=bandwidth=enabled=true")
                             {
                                 bandwidth = true;
+                                break;
                             }
                         }
                     }
@@ -522,9 +528,10 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s.Substring(42) != "none")
+                            if (s != "!re.tag=mac-server=allowed-interface-list=none")
                             {
                                 mac_server = true;
+                                break;
                             }
                         }
                     }
@@ -549,9 +556,10 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s.Substring(42) != "none")
+                            if (s != "!re.tag=mac-winbox=allowed-interface-list=none")
                             {
                                 mac_winbox = true;
+                                break;
                             }
                         }
                     }
@@ -576,9 +584,10 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s.Substring(25) == "yes")
+                            if (s == "!re.tag=mac-ping=enabled=true")
                             {
                                 mac_ping = true;
+                                break;
                             }
                         }
                     }
