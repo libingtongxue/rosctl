@@ -196,7 +196,10 @@ namespace rosctl
         {
             get
             {
-                return mkInfos;
+				lock (lockObj)
+				{
+                    return mkInfos;
+				}
             }
         }
         public void Stop()
