@@ -196,15 +196,15 @@ namespace rosctl
         {
             get
             {
+                List<MKInfo> tempList = new List<MKInfo>();
                 lock (lockObj)
                 {
-                     List<MKInfo> tempList = new List<MKInfo>();
-                     foreach(MKInfo m in mkInfos)
-                     {
+                    foreach(MKInfo m in mkInfos)
+                    {
                         tempList.Add(m);
-                     }
-                     return tempList;
+                    }
                 }
+                return tempList;
             }
         }
         public void Stop()
