@@ -262,6 +262,8 @@ namespace rosctl
         }
         private static void Timer_Callback(object state)
         {
+            Console.Clear();
+            Console.SetCursorPosition(0,0);
             foreach (MKInfo t in mndp.GetMKInfos)
             {
                 Timer_MK(t.IPAddr);
@@ -869,7 +871,9 @@ namespace rosctl
                             {
                                 GetResourceInfo(d.Key, d.Value, ref mKresource); 
                             }
-                            Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3},内存:{4}/{5},闪存:{6}/{7}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, mKresource.Free_Memory, mKresource.Total_Memory, mKresource.Free_Hdd_Space, mKresource.Total_Hdd_Space);
+                            double free_mem = (Convert.ToDouble( mKresource.Free_Memory)/Convert.ToDouble(mKresource.Total_Memory));
+                            double free_hdd = (Convert.ToDouble(mKresource.Free_Hdd_Space)/Convert.ToDouble(mKresource.Total_Hdd_Space));
+                            Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, free_mem, free_hdd);
                         }
                     }
                 }
@@ -921,16 +925,16 @@ namespace rosctl
                         }
                     }
                 }
-                for (int i = 0; i < Console.WindowWidth; i++)
-                {
-                    Console.Write("-");
-                }
             }
             else
             {
                 Console.WriteLine("IP地址:{0},账号密码错误", IpAddr);
             }
             mk.Close();
+            for(int i = 0; i < Console.WindowWidth ;i++)
+            {
+                Console.Write("-");
+            }    
         }
         static void GetHealthInfo(string key,string value,ref MKhealth mKhealth)
         {
