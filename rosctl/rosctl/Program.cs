@@ -933,11 +933,12 @@ namespace rosctl
                 if(reboot)
                 {
                     mk.Send("/system/reboot");
-                    mk.Send(".tag=reboot");
-                    foreach(string s in mk.Send())
+                    mk.Send(".tag=reboot",true);
+                    foreach(string s in mk.Read())
                     {
-                        if(s.StartsWith("!done")){
-                            Console.WriteLine("IP地址{0},reboot",IpAddr);
+                        if(s.StartsWith("!done"))
+                        {
+                            Console.WriteLine("IP地址{0},重启",IpAddr);
                         }
                     }
                 }
