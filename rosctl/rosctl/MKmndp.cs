@@ -23,8 +23,8 @@ namespace rosctl
         const ushort TlvTypeUnknown = 17;
         static readonly int Port = 5678;
         static readonly byte[] sendBytes = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-        static readonly UdpClient udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, Port));
-        static IPEndPoint IPBroadcast;
+        static  UdpClient udpClient;
+        static  IPEndPoint IPBroadcast;
         readonly Thread threadSend;
         readonly Thread threadReceive;
         static List<MKInfo> mkInfos = new List<MKInfo>();
@@ -35,7 +35,7 @@ namespace rosctl
         object lockObj = new object();
         public MKmndp()
         {
-            IPBroadcast = new IPEndPoint(IPAddress.Broadcast, Port);
+           
             threadSend = new Thread(new ThreadStart(SendMsg))
             {
                 Name = sendName
@@ -47,6 +47,11 @@ namespace rosctl
         }
         public void Start()
         {
+            IPBroadcast = new IPEndPoint(IPAddress.Broadcast, Port);
+            udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, Port))            
+            {
+                EnableBroadcast = true
+            };
             //SendMsgThread
             if (threadSend.ThreadState != ThreadState.Running)
             {

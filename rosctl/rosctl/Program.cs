@@ -889,12 +889,12 @@ namespace rosctl
                     mk.Send(".tag=romon", true);
                     bool romonFlag = false;
                     foreach (string s in mk.Read())
-                    {
+                    {                      
                         if (s.StartsWith("!re"))
                         {
-                            if (s.Substring(22) != "true")
+                            if (s != "!re.tag=romon=enabled=true")
                             {
-                                romon = true;
+                                romonFlag = true;
                             }
                         }
                     }
