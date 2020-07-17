@@ -523,7 +523,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IpAddr:{0},bandwidth", IpAddr);
+                                Console.WriteLine("IP地址:{0},bandwidth", IpAddr);
                             }
                         }
                     }
@@ -551,7 +551,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IpAddr:{0},mac-server", IpAddr);
+                                Console.WriteLine("IP地址:{0},mac-server", IpAddr);
                             }
                         }
                     }
@@ -579,7 +579,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IpAddr:{0},mac-winbox", IpAddr);
+                                Console.WriteLine("IP地址:{0},mac-winbox", IpAddr);
                             }
                         }
                     }
@@ -607,7 +607,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IpAddr:{0},mac-ping", IpAddr);
+                                Console.WriteLine("IP地址:{0},mac-ping", IpAddr);
                             }
                         }
                     }
@@ -619,7 +619,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},watchdog", IpAddr);
+                            Console.WriteLine("IP地址:{0},watchdog", IpAddr);
                         }
                     }
                     mk.Send("/ip/cloud/set");
@@ -631,7 +631,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},cloud", IpAddr);
+                            Console.WriteLine("IP地址:{0},cloud", IpAddr);
                         }
                     }
                     mk.Send("/ip/cloud/advanced/set");
@@ -641,7 +641,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},advanced", IpAddr);
+                            Console.WriteLine("IP地址:{0},advanced", IpAddr);
                         }
                     }
                     mk.Send("/ip/service/print");
@@ -664,7 +664,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},www-ssl", IpAddr);
+                            Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
                         }
                     }
                     //
@@ -688,7 +688,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},www", IpAddr);
+                            Console.WriteLine("IP地址:{0},www", IpAddr);
                         }
                     }
                     //
@@ -712,7 +712,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},telnet", IpAddr);
+                            Console.WriteLine("IP地址:{0},telnet", IpAddr);
                         }
                     }
                     //
@@ -736,7 +736,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},ssh", IpAddr);
+                            Console.WriteLine("IP地址:{0},ssh", IpAddr);
                         }
                     }
                     //
@@ -760,7 +760,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},ftp", IpAddr);
+                            Console.WriteLine("IP地址:{0},ftp", IpAddr);
                         }
                     }
                     //
@@ -784,7 +784,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},api-ssl", IpAddr);
+                            Console.WriteLine("IP地址:{0},api-ssl", IpAddr);
                         }
                     }
                 }
