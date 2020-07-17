@@ -238,7 +238,7 @@ namespace rosctl
             Console.WriteLine("rosctl mndp -u root -p password --resource");
             Console.WriteLine("rosctl mndp -u root -p password --wireless");
             Console.WriteLine("rosctl mndp -u root -p password --neighbor");
-            Console.WriteLine("rosctl mndp -u root -p password --roman");
+            Console.WriteLine("rosctl mndp -u root -p password --romon");
             Console.WriteLine("rosctl mndp -u root -p password --new password");
             Console.WriteLine("rosctl mndp -u root -p password --logging 192.168.1.2");
             Console.WriteLine("rosctl mndp -u root -p password --snmp 192.168.1.2");
@@ -269,9 +269,9 @@ namespace rosctl
         {
             Console.Clear();
             Console.SetCursorPosition(0,0);
-            foreach (MKInfo t in mndp.GetMKInfos)
+            foreach (string t in mndp.GetMKInfoIpAddrs)
             {
-                Timer_MK(t.IPAddr);
+                Timer_MK(t);
             }
         }
         private static void Timer_MK(string IpAddr)

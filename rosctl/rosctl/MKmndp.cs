@@ -212,6 +212,36 @@ namespace rosctl
                 return tempList;
             }
         }
+        public List<string> GetMKInfoIpAddrs
+        {
+            get
+            {
+                List<string> tempList = new List<string> ();
+                lock(lockObj)
+                {
+                    foreach(MKInfo s in mikroTikInfos)
+                    {
+                        tempList.Add(s.IPAddr);
+                    }
+                }
+                return tempList;
+            }
+        }
+        public List<string> GetMKInfoMacAddrs
+        {
+            get
+            {
+                List<string> tempList = new List<string> ();
+                lock(lockObj)
+                {
+                    foreach(MKInfo s in mikroTikInfos)
+                    {
+                        tempList.Add(s.MacAddr);
+                    }
+                }
+                return tempList;
+            }
+        }
         public void Stop()
         {
             if (threadSend.ThreadState != ThreadState.Aborted)
