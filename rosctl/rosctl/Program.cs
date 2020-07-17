@@ -23,6 +23,7 @@ namespace rosctl
         static bool neighbor = false;
         static bool romon = false;
         static bool health = false;
+        static bool reboot = false;
         static void Main(string[] args)
         {
             if (args.Length > 2)
@@ -221,6 +222,10 @@ namespace rosctl
                 else if (args[i].StartsWith("--health"))
                 {
                     health = true;
+                }
+                else if(args[i].StartsWith("--reboot"))
+                {
+                    reboot = true;
                 }
             }
         }
@@ -922,6 +927,17 @@ namespace rosctl
                                 GetHealthInfo(d.Key, d.Value, ref mKhealth);
                             }
                             Console.WriteLine("IP地址:{0},电压:{1},温度:{2}", IpAddr, mKhealth.Voltage, mKhealth.Temperature);
+                        }
+                    }
+                }
+                if(reboot)
+                {
+                    mk.Send("/system/reboot");
+                    mk.Send(".tag=reboot");
+                    foreach(string s in mk.Send())
+                    {
+                        if(s.StartsWith("!done")){
+                            Console.WriteLine("IP地址{0},reboot",IpAddr);
                         }
                     }
                 }
