@@ -250,6 +250,7 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --wireless");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --health");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --auto");
+            Console.WriteLine("rosctl 192.168.1.3 -u root -p password --reboot");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --resource");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4,192.168.112.5 -u root -p password --ethernet");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --wireless");
