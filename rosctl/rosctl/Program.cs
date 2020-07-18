@@ -291,7 +291,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},password", IpAddr);
+                            Console.WriteLine("IP地址:{0},password", IpAddr);
                         }
                     }
                 }
@@ -459,7 +459,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("action-remove");
+                                Console.WriteLine("IP地址:{0},action-change",IpAddr);
                             }
                         }
                     }
@@ -468,7 +468,6 @@ namespace rosctl
                 {
                     mk.Send("/system/ntp/client/set");
                     mk.Send("=enabled=yes");
-                    //mk.Send("=mode=unicast");
                     mk.Send("=primary-ntp=" + ntp);
                     mk.Send(".tag=ntp", true);
                     foreach (string s in mk.Read())
