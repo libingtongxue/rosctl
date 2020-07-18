@@ -790,7 +790,7 @@ namespace rosctl
                 }
                 if (neighbor)
                 {
-                    mk.Send("/ip/neighbor/discovery-setting/set");
+                    mk.Send("/ip/neighbor/discovery-settings/set");
                     mk.Send("=discover-interface-list=none");
                     mk.Send(".tag=neighbor",true);
                     foreach (string s in mk.Read())
