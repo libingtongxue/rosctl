@@ -219,7 +219,7 @@ namespace rosctl
                 List<string> tempList = new List<string> ();
                 lock(lockObj)
                 {
-                    foreach(MKInfo s in mikroTikInfos)
+                    foreach(MKInfo s in mkInfos)
                     {
                         tempList.Add(s.IPAddr);
                     }
@@ -234,7 +234,7 @@ namespace rosctl
                 List<string> tempList = new List<string> ();
                 lock(lockObj)
                 {
-                    foreach(MKInfo s in mikroTikInfos)
+                    foreach(MKInfo s in mkInfos)
                     {
                         tempList.Add(s.MacAddr);
                     }
