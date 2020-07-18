@@ -468,7 +468,7 @@ namespace rosctl
                 {
                     mk.Send("/system/ntp/client/set");
                     mk.Send("=enabled=yes");
-                    mk.Send("=mode=unicast");
+                    //mk.Send("=mode=unicast");
                     mk.Send("=primary-ntp=" + ntp);
                     mk.Send(".tag=ntp", true);
                     foreach (string s in mk.Read())
@@ -883,7 +883,7 @@ namespace rosctl
                         }
                     }
                 }
-                if(romon)
+                if (romon)
                 {
                     mk.Send("/tool/romon/print");
                     mk.Send("=.proplist=enabled");
@@ -931,7 +931,7 @@ namespace rosctl
                         }
                     }
                 }
-                if(reboot)
+                if (reboot)
                 {
                     mk.Send("/system/reboot");
                     mk.Send(".tag=reboot",true);
