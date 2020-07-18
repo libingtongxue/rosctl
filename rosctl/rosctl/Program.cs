@@ -321,7 +321,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IpAddr:{0},action-add", IpAddr);
+                                Console.WriteLine("IP地址:{0},action-add", IpAddr);
                             }
                         }
                         mk.Send("/system/logging/print");
@@ -348,7 +348,7 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IpAddr:{0},warning", IpAddr);
+                                    Console.WriteLine("IP地址:{0},warning", IpAddr);
                                 }
                             }
                         }
@@ -376,7 +376,7 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IpAddr:{0},error", IpAddr);
+                                    Console.WriteLine("IP地址:{0},error", IpAddr);
                                 }
                             }
                         }
@@ -404,7 +404,7 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IpAddr:{0},info", IpAddr);
+                                    Console.WriteLine("IP地址:{0},info", IpAddr);
                                 }
                             }
                         }
@@ -432,7 +432,7 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IpAddr:{0},critical", IpAddr);
+                                    Console.WriteLine("IP地址:{0},critical", IpAddr);
                                 }
                             }
                         }
@@ -475,7 +475,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},ntp", IpAddr);
+                            Console.WriteLine("IP地址:{0},ntp", IpAddr);
                         }
                     }
                 }
