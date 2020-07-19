@@ -79,6 +79,8 @@ namespace rosctl
                     case "--help":
                         Help();
                         break;
+                    case "--author":
+                        break;
                 }
             }
             else if (args.Length == 0)
@@ -278,6 +280,13 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --new password --logging 192.168.1.2 --snmp 192.168.1.2");
             Console.WriteLine("命令帮助:");
             Console.WriteLine("rosctl --help");
+            Console.WriteLine("rosctl --author");
+        }
+        static void Author()
+        {
+            Console.WriteLine("Author:LiBing");
+            Console.WriteLine("Phone:02887488587");
+            Console.WriteLine("Mobile:18908035651");
         }
         private static void Timer_Callback(object state)
         {
