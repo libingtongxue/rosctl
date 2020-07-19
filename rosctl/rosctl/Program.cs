@@ -7,7 +7,8 @@ namespace rosctl
 {
     class Program
     {
-        static readonly Timer Timer = new Timer(Timer_Callback, null, Timeout.Infinite, Timeout.Infinite);
+        static readonly Timer Timer= new Timer(Timer_Callback, null, Timeout.Infinite, Timeout.Infinite);
+        static readonly Timer TimerMndp = new Timer(Mndp_Callback,null,Timeout.Infinite,Timeout.Infinite);
         static readonly List<string> IpAddrs = new List<string>();
         static readonly MKmndp mndp = new MKmndp();
         static string username = "";
@@ -49,11 +50,26 @@ namespace rosctl
                     {
                         IpAddrs.Add(addrs[j]);
                     }
-                    ParseArgs(args);
                     foreach (string s in IpAddrs)
                     {
                         Timer_MK(s);
                     }
+                    ParseArgs(args);
+                }
+            }
+            else if(args.Length == 2)
+            {
+                if(args[0] == "mndp" && args[1].StartsWith("--show"))
+                {
+                    mndp.Start();
+                    TimerMndp.Change(0,5000);
+                    while (!Console.KeyAvailable)
+                    {
+                        Thread.Sleep(100);
+                    }
+                    TimerMndp.Change(Timeout.Infinite, Timeout.Infinite);
+                    TimerMndp.Dispose();
+                    mndp.Stop();
                 }
             }
             else if (args.Length == 1)
@@ -262,9 +278,6 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --new password --logging 192.168.1.2 --snmp 192.168.1.2");
             Console.WriteLine("命令帮助:");
             Console.WriteLine("rosctl --help");
-            Console.WriteLine("rosctl --author");
-            Console.WriteLine("rosctl --version");
-            Console.WriteLine("rosctl --copyright");
         }
         private static void Timer_Callback(object state)
         {
@@ -273,6 +286,16 @@ namespace rosctl
             foreach (string t in mndp.GetMKInfoIpAddrs)
             {
                 Timer_MK(t);
+            }
+        }
+        private static void Mndp_Callback(object state)
+        {
+            Console.Clear();
+            Console.SetCursorPosition(0,0);
+            List<MKInfo> mikroTikInfos = mndp.GetMKInfos;
+            foreach(MKInfo m in mikroTikInfos)
+            { 
+                Console.WriteLine("IPAddr:{0},MacAddr:{1},Identity:{2},Version:{3},Platform:{4},Uptime:{5},Board:{6}", m.IPAddr, m.MacAddr, m.Identity, m.Version, m.Platform, m.Uptime, m.Board);
             }
         }
         private static void Timer_MK(string IpAddr)
