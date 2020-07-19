@@ -25,6 +25,7 @@ namespace rosctl
         static bool romon = false;
         static bool health = false;
         static bool reboot = false;
+        static bool capsman = false;
         static void Main(string[] args)
         {
             if (args.Length > 2)
@@ -245,6 +246,10 @@ namespace rosctl
                 {
                     reboot = true;
                 }
+                else if(args[i].StartsWith("--capsman"))
+                {
+                    capsman = true;
+                }
             }
         }
         static void Help()
@@ -269,6 +274,7 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --health");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --auto");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --reboot");
+            Console.WriteLine("rosctl 192.168.1.3 -u root -p password --capsman");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --resource");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4,192.168.112.5 -u root -p password --ethernet");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --wireless");
@@ -974,6 +980,31 @@ namespace rosctl
                         }
                     }
                 }
+                if (capsman)
+                {
+                    mk.Send("/caps-man/registration-table/print");
+                    mk.Send("=.proplist=interface");
+                    mk.Send("=.proplist=ssid");
+                    mk.Send("=.proplist=macaddress");
+                    mk.Send("=.proplist=rx-rate");
+                    mk.Send("=.proplist=tx-rate");
+                    mk.Send("=.proplist=rx-signal");
+                    mk.Send("=.proplist=uptime");
+                    mk.Send(".tag=capsman");
+                    foreach (string t in mk.Read())
+                    {
+                        if (t.StartsWith("!re"))
+                        {
+                            MKcapsman mKcapsman = new MKcapsman();
+                            string data = t.Substring(15);
+                            foreach (var s in GetDictionary(data))
+                            {
+                                GetCapsmanInfo(s.Key, s.Value, ref mKcapsman);
+                            }
+                            Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},",IpAddr,mKcapsman.SSID,mKcapsman.MacAddress,mKcapsman.Uptime,mKcapsman.RxRate,mKcapsman.TxRate);
+                        }
+                    }
+                }
             }
             else
             {
@@ -984,6 +1015,33 @@ namespace rosctl
             {
                 Console.Write("-");
             }    
+        }
+        static void GetCapsmanInfo(string key,string value,ref MKcapsman mKcapsman)
+        {
+            switch(key)
+            {
+                case "interface":
+                    mKcapsman.Interface = value;
+                    break;
+                case "ssid":
+                    mKcapsman.SSID = value;
+                    break;
+                case "mac-address":
+                    mKcapsman.MacAddress = value;
+                    break;
+                case "rx-rate":
+                    mKcapsman.RxRate = value;
+                    break;
+                case "tx-rate":
+                    mKcapsman.TxRate = value;
+                    break;
+                case "rx-signal":
+                    mKcapsman.RxSignal = value;
+                    break;
+                case "uptime":
+                    mKcapsman.Uptime = value;
+                    break;
+            }
         }
         static void GetHealthInfo(string key,string value,ref MKhealth mKhealth)
         {
