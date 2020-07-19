@@ -50,11 +50,11 @@ namespace rosctl
                     {
                         IpAddrs.Add(addrs[j]);
                     }
+                    ParseArgs(args);
                     foreach (string s in IpAddrs)
                     {
                         Timer_MK(s);
                     }
-                    ParseArgs(args);
                 }
             }
             else if(args.Length == 2)
