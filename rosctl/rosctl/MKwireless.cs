@@ -6,6 +6,7 @@ namespace rosctl
 {
     class MKwireless
     {
+        public string MacAddr { get; set; }
         public string Uptime { get; set; }
         public string Rx_Rate { get; set; }
         public string Tx_Rate { get; set; }

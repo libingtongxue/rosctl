@@ -272,7 +272,6 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --ethernet");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --wireless");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --health");
-            Console.WriteLine("rosctl 192.168.1.3 -u root -p password --auto");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --reboot");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --capsman");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --resource");
@@ -291,8 +290,8 @@ namespace rosctl
         static void Author()
         {
             Console.WriteLine("Author:LiBing");
-            Console.WriteLine("Phone:02887488587");
             Console.WriteLine("Mobile:18908035651");
+            Console.WriteLine("Phone:028-87488587");
         }
         private static void Timer_Callback(object state)
         {
@@ -866,6 +865,7 @@ namespace rosctl
                 if (wireless)
                 {
                     mk.Send("/interface/wireless/registration-table/print");
+                    mk.Send("=.proplist=mac-address");
                     mk.Send("=.proplist=uptime");
                     mk.Send("=.proplist=rx-rate");
                     mk.Send("=.proplist=tx-rate");
@@ -889,7 +889,7 @@ namespace rosctl
                             {
                                 GetWirelessInfo(d.Key, d.Value, ref mKwireless);
                             }
-                            Console.WriteLine("IP地址:{0},时间:{1},Rx/Tx-Rate:{2}/{3},Rx/Tx-CCQ:{4}/{5},STN:{6}", IpAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
+                            Console.WriteLine("IP地址:{0},Mac地址:{1},时间:{2},Rx/Tx-Rate:{3}/{4},Rx/Tx-CCQ:{5}/{6},STN:{7}", IpAddr, mKwireless.MacAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
                         }
                     }
                 }
@@ -1083,6 +1083,9 @@ namespace rosctl
         {
             switch (key)
             {
+                case "mac-address":
+                    mKwireless.MacAddr = value;
+                    break;
                 case "uptime":
                     mKwireless.Uptime = value;
                     break;
