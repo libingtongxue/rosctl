@@ -34,8 +34,7 @@ namespace rosctl
         static readonly string receiveName = "Receive";
         object lockObj = new object();
         public MKmndp()
-        {
-           
+        {           
             threadSend = new Thread(new ThreadStart(SendMsg))
             {
                 Name = sendName

@@ -985,12 +985,12 @@ namespace rosctl
                     mk.Send("/caps-man/registration-table/print");
                     mk.Send("=.proplist=interface");
                     mk.Send("=.proplist=ssid");
-                    mk.Send("=.proplist=macaddress");
+                    mk.Send("=.proplist=mac-address");
                     mk.Send("=.proplist=rx-rate");
                     mk.Send("=.proplist=tx-rate");
                     mk.Send("=.proplist=rx-signal");
                     mk.Send("=.proplist=uptime");
-                    mk.Send(".tag=capsman");
+                    mk.Send(".tag=capsman",true);
                     foreach (string t in mk.Read())
                     {
                         if (t.StartsWith("!re"))
