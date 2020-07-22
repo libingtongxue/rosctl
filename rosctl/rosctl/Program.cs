@@ -81,6 +81,7 @@ namespace rosctl
                         Help();
                         break;
                     case "--author":
+                        Author();
                         break;
                 }
             }
@@ -105,7 +106,14 @@ namespace rosctl
                         }
                         else
                         {
-                            username = args[t];
+                            if (args[t].StartsWith("-"))
+                            {
+                                Console.WriteLine("Username Is Null");
+                            }
+                            else
+                            {
+                                username = args[t];
+                            }                            
                         }
                     }
                     else
@@ -125,7 +133,14 @@ namespace rosctl
                         }
                         else
                         {
-                            password = args[t];
+                            if(args[t].StartsWith("-"))
+                            {
+                                Console.WriteLine("Password Is Null");
+                            }
+                            else
+                            {
+                                password = args[t];
+                            }                            
                         }
                     }
                     else
