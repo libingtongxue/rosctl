@@ -560,7 +560,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IP地址:{0},bandwidth", IpAddr);
+                                Console.WriteLine("IP地址:{0},Bandwidth", IpAddr);
                             }
                         }
                     }
@@ -656,7 +656,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IP地址:{0},watchdog", IpAddr);
+                            Console.WriteLine("IP地址:{0},Watchdog", IpAddr);
                         }
                     }
                     mk.Send("/ip/cloud/set");
@@ -668,7 +668,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IP地址:{0},cloud", IpAddr);
+                            Console.WriteLine("IP地址:{0},Cloud", IpAddr);
                         }
                     }
                     mk.Send("/ip/cloud/advanced/set");
@@ -678,7 +678,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IP地址:{0},advanced", IpAddr);
+                            Console.WriteLine("IP地址:{0},Advanced", IpAddr);
                         }
                     }
                     mk.Send("/ip/service/print");
@@ -865,8 +865,8 @@ namespace rosctl
                 if (wireless)
                 {
                     mk.Send("/interface/wireless/registration-table/print");
-                    mk.Send("=.proplist=mac-address");
                     mk.Send("=.proplist=uptime");
+                    mk.Send("=.proplist=mac-address");
                     mk.Send("=.proplist=rx-rate");
                     mk.Send("=.proplist=tx-rate");
                     mk.Send("=.proplist=rx-ccq");
@@ -945,7 +945,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IP地址:{0},romon", IpAddr);
+                                Console.WriteLine("IP地址:{0},RoMon", IpAddr);
                             }
                         }
                     }
