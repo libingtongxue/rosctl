@@ -11,12 +11,13 @@ namespace rosctl
         static readonly Timer TimerMndp = new Timer(Mndp_Callback,null,Timeout.Infinite,Timeout.Infinite);
         static readonly List<string> IpAddrs = new List<string>();
         static readonly MKmndp mndp = new MKmndp();
+        static readonly Snmp snmp = new Snmp();
         static string username = "";
         static string password = "";
         static string newPassword = "";
         static string logging = "";
         static string ntp = "";
-        static string snmp = "";
+        static string snmpTarget = "";
         static bool auto = false;
         static bool wireless = false;
         static bool ethernet = false;
@@ -201,16 +202,34 @@ namespace rosctl
                         int t = i + 1;
                         if (t >= args.Length)
                         {
-                            Console.WriteLine("SNMP Is Null");
+                            Console.WriteLine("SNMP Target Is Null");
                         }
                         else
                         {
-                            snmp = args[t];
+                            snmpTarget = args[t];
+                        }
+                        int c = i + 2;
+                        if(c >= args.Length)
+                        {
+                            Console.WriteLine("SNMP Contact Is Null");
+                        }
+                        else
+                        {
+                            snmp.Contact = args[c];
+                        }
+                        int l = i + 3;
+                        if(l >= args.Length)
+                        {
+                            Console.WriteLine("SNMP Location Is Null");
+                        }
+                        else
+                        {
+                            snmp.Location = args[l];
                         }
                     }
                     else
                     {
-                        snmp = st;
+                        snmpTarget = st;
                     }
                 }
                 else if (args[i].StartsWith("--ntp"))
@@ -530,12 +549,12 @@ namespace rosctl
                         }
                     }
                 }
-                if (!string.IsNullOrEmpty(snmp))
+                if (!string.IsNullOrEmpty(snmpTarget))
                 {
                     mk.Send("/snmp/set");
                     mk.Send("=enabled=yes");
-                    mk.Send("=contact=LiBing");
-                    mk.Send("=location=18908035651");
+                    mk.Send("=contact=" + (string.IsNullOrEmpty(snmp.Contact) ? "LiBing" : snmp.Contact));
+                    mk.Send("=location=" + (string.IsNullOrEmpty(snmp.Location) ? "18908035651" : snmp.Location));
                     mk.Send("=trap-target=" + snmp);
                     mk.Send("=trap-version=2");
                     mk.Send("=trap-generators=interface");

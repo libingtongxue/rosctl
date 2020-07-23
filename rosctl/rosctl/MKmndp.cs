@@ -27,7 +27,7 @@ namespace rosctl
         static  IPEndPoint IPBroadcast;
         readonly Thread threadSend;
         readonly Thread threadReceive;
-        static List<MKInfo> mkInfos = new List<MKInfo>();
+        static readonly List<MKInfo> mkInfos = new List<MKInfo>();
         bool sendFlag = true;
         bool receiveFlag = true;
         static readonly string sendName = "Send";
