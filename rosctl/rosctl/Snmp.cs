@@ -8,5 +8,6 @@ namespace rosctl
     {
         public string Contact { get; set; }
         public string Location { get; set; }
+        public string Target { get; set; }
     }
 }

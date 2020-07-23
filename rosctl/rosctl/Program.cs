@@ -17,7 +17,7 @@ namespace rosctl
         static string newPassword = "";
         static string logging = "";
         static string ntp = "";
-        static string snmpTarget = "";
+        static bool snmpFlag = false;
         static bool auto = false;
         static bool wireless = false;
         static bool ethernet = false;
@@ -206,7 +206,7 @@ namespace rosctl
                         }
                         else
                         {
-                            snmpTarget = args[t];
+                            snmp.Target = args[t];
                         }
                         int c = i + 2;
                         if(c >= args.Length)
@@ -229,8 +229,9 @@ namespace rosctl
                     }
                     else
                     {
-                        snmpTarget = st;
+                        snmp.Target = st;
                     }
+                    snmpFlag = true;
                 }
                 else if (args[i].StartsWith("--ntp"))
                 {
@@ -362,7 +363,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IP地址:{0},password", IpAddr);
+                            Console.WriteLine("IP地址:{0},Password", IpAddr);
                         }
                     }
                 }
@@ -545,17 +546,17 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IP地址:{0},ntp", IpAddr);
+                            Console.WriteLine("IP地址:{0},Ntp", IpAddr);
                         }
                     }
                 }
-                if (!string.IsNullOrEmpty(snmpTarget))
+                if (snmpFlag)
                 {
                     mk.Send("/snmp/set");
                     mk.Send("=enabled=yes");
                     mk.Send("=contact=" + (string.IsNullOrEmpty(snmp.Contact) ? "LiBing" : snmp.Contact));
                     mk.Send("=location=" + (string.IsNullOrEmpty(snmp.Location) ? "18908035651" : snmp.Location));
-                    mk.Send("=trap-target=" + snmpTarget);
+                    mk.Send("=trap-target=" + (string.IsNullOrEmpty(snmp.Target) ? "192.168.112.2" : snmp.Target));
                     mk.Send("=trap-version=2");
                     mk.Send("=trap-generators=interface");
                     mk.Send(".tag=snmp", true);
@@ -563,7 +564,7 @@ namespace rosctl
                     {
                         if (s.StartsWith("!done"))
                         {
-                            Console.WriteLine("IpAddr:{0},snmp", IpAddr);
+                            Console.WriteLine("IpAddr:{0},Snmp", IpAddr);
                         }
                     }
                 }
