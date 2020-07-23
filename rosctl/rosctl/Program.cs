@@ -555,7 +555,7 @@ namespace rosctl
                     mk.Send("=enabled=yes");
                     mk.Send("=contact=" + (string.IsNullOrEmpty(snmp.Contact) ? "LiBing" : snmp.Contact));
                     mk.Send("=location=" + (string.IsNullOrEmpty(snmp.Location) ? "18908035651" : snmp.Location));
-                    mk.Send("=trap-target=" + snmp);
+                    mk.Send("=trap-target=" + snmpTarget);
                     mk.Send("=trap-version=2");
                     mk.Send("=trap-generators=interface");
                     mk.Send(".tag=snmp", true);
