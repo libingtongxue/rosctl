@@ -12,8 +12,7 @@ namespace rosctl
         static readonly List<string> IpAddrs = new List<string>();
         static readonly MKmndp mndp = new MKmndp();
         static readonly Snmp snmp = new Snmp();
-        static string username = "";
-        static string password = "";
+        static readonly MKuser user = new MKuser();
         static string newPassword = "";
         static string logging = "";
         static string ntp = "";
@@ -113,13 +112,13 @@ namespace rosctl
                             }
                             else
                             {
-                                username = args[t];
+                                user.Username = args[t];
                             }                            
                         }
                     }
                     else
                     {
-                        username = st;
+                        user.Username = st;
                     }
                 }
                 else if (args[i].StartsWith("-p"))
@@ -140,13 +139,13 @@ namespace rosctl
                             }
                             else
                             {
-                                password = args[t];
+                                user.Password = args[t];
                             }                            
                         }
                     }
                     else
                     {
-                        password = st;
+                        user.Password = st;
                     }
                 }
                 else if (args[i].StartsWith("--auto"))
@@ -350,12 +349,12 @@ namespace rosctl
         private static void Timer_MK(string IpAddr)
         {
             MK mk = new MK(IpAddr);
-            if (mk.Login(username, password))
+            if (mk.Login(user.Username, user.Password))
             {
                 if (!string.IsNullOrEmpty(newPassword))
                 {
                     mk.Send("/password");
-                    mk.Send("=old-password=" + password);
+                    mk.Send("=old-password=" + user.Password);
                     mk.Send("=new-password=" + newPassword);
                     mk.Send("=confirm-new-password=" + newPassword);
                     mk.Send(".tag=password", true);
