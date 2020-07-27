@@ -14,9 +14,10 @@ namespace rosctl
         static readonly Snmp snmp = new Snmp();
         static readonly MKuser user = new MKuser();
         static readonly MKlogging logging = new MKlogging();
+        static readonly MKntp ntp = new MKntp();
         static string newPassword = "";
         static bool loggingFlag = false;
-        static string ntp = "";
+        static bool ntpFlag = false;
         static bool snmpFlag = false;
         static bool auto = false;
         static bool wireless = false;
@@ -257,13 +258,14 @@ namespace rosctl
                         }
                         else
                         {
-                            ntp = args[t];
+                            ntp.Primary = args[t];
                         }
                     }
                     else
                     {
-                        ntp = st;
+                        ntp.Primary = st;
                     }
+                    ntpFlag = true;
                 }
                 else if (args[i].StartsWith("--ethernet"))
                 {
@@ -356,7 +358,7 @@ namespace rosctl
             List<MKInfo> mikroTikInfos = mndp.GetMKInfos;
             foreach(MKInfo m in mikroTikInfos)
             { 
-                Console.WriteLine("IPAddr:{0},MacAddr:{1},Identity:{2},Version:{3},Platform:{4},Uptime:{5},Board:{6}", m.IPAddr, m.MacAddr, m.Identity, m.Version, m.Platform, m.Uptime, m.Board);
+                Console.WriteLine("MacAddr:{1},IPAddr:{0},Identity:{2},Version:{3},Platform:{4},Uptime:{5},Board:{6}", m.IPAddr, m.MacAddr, m.Identity, m.Version, m.Platform, m.Uptime, m.Board);
             }
         }
         private static void Timer_MK(string IpAddr)
@@ -562,11 +564,11 @@ namespace rosctl
                         }
                     }
                 }
-                if (!string.IsNullOrEmpty(ntp))
+                if (ntpFlag)
                 {
                     mk.Send("/system/ntp/client/set");
                     mk.Send("=enabled=yes");
-                    mk.Send("=primary-ntp=" + ntp);
+                    mk.Send("=primary-ntp=" + ntp.Primary);
                     mk.Send(".tag=ntp", true);
                     foreach (string s in mk.Read())
                     {
