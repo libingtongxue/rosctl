@@ -13,8 +13,9 @@ namespace rosctl
         static readonly MKmndp mndp = new MKmndp();
         static readonly Snmp snmp = new Snmp();
         static readonly MKuser user = new MKuser();
+        static readonly MKlogging logging = new MKlogging();
         static string newPassword = "";
-        static string logging = "";
+        static bool loggingFlag = false;
         static string ntp = "";
         static bool snmpFlag = false;
         static bool auto = false;
@@ -181,17 +182,29 @@ namespace rosctl
                         int t = i + 1;
                         if (t >= args.Length)
                         {
-                            Console.WriteLine("Logging Is Null");
+                            Console.WriteLine("Logging Target Is Null");
                         }
                         else
                         {
-                            logging = args[t];
+                            logging.Remote = args[t];
+                        }
+                        int p = i + 2;
+                        if(p >= args.Length)
+                        {
+                            logging.Port = "514";
+                            Console.WriteLine("Logging Port Is 514");
+                        }
+                        else
+                        {
+                            logging.Port = args[p];
                         }
                     }
                     else
                     {
-                        logging = st;
+                        logging.Remote = st;
+                        logging.Port = "514";
                     }
+                    loggingFlag = true;
                 }
                 else if (args[i].StartsWith("--snmp"))
                 {
@@ -366,18 +379,30 @@ namespace rosctl
                         }
                     }
                 }
-                if (!string.IsNullOrEmpty(logging))
+                if (loggingFlag)
                 {
                     mk.Send("/system/logging/action/print");
                     mk.Send("?name=log");
                     mk.Send("=.proplist=remote");
+                    mk.Send("=.proplist=remote-port");
                     mk.Send(".tag=log-action", true);
                     string remote = "";
+                    string port = "";
                     foreach (string s in mk.Read())
                     {
                         if (s.StartsWith("!re"))
                         {
-                            remote = s.Substring(26);
+                            foreach (var d in GetDictionary(s))
+                            {
+                                if (d.Key == "remote")
+                                {
+                                    remote = d.Value;
+                                }
+                                if(d.Key =="remote-port")
+                                {
+                                    port = d.Value;
+                                }
+                            }
                         }
                     }
                     if (string.IsNullOrEmpty(remote))
@@ -385,14 +410,15 @@ namespace rosctl
                         mk.Send("/system/logging/action/add");
                         mk.Send("=name=log");
                         mk.Send("=target=remote");
-                        mk.Send("=remote=" + logging);
+                        mk.Send("=remote=" + logging.Remote);
+                        mk.Send("=remote-port" + logging.Port);
                         mk.Send("=bsd-syslog=yes");
                         mk.Send(".tag=action", true);
                         foreach (string s in mk.Read())
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IP地址:{0},action-add", IpAddr);
+                                Console.WriteLine("IP地址:{0},Action-Add", IpAddr);
                             }
                         }
                         mk.Send("/system/logging/print");
@@ -419,7 +445,7 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IP地址:{0},warning", IpAddr);
+                                    Console.WriteLine("IP地址:{0},Logging-warning", IpAddr);
                                 }
                             }
                         }
@@ -447,7 +473,7 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IP地址:{0},error", IpAddr);
+                                    Console.WriteLine("IP地址:{0},Logging-Error", IpAddr);
                                 }
                             }
                         }
@@ -475,7 +501,7 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IP地址:{0},info", IpAddr);
+                                    Console.WriteLine("IP地址:{0},Logging-Info", IpAddr);
                                 }
                             }
                         }
@@ -503,12 +529,12 @@ namespace rosctl
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IP地址:{0},critical", IpAddr);
+                                    Console.WriteLine("IP地址:{0},Logging-Critical", IpAddr);
                                 }
                             }
                         }
                     }
-                    else if (remote != logging)
+                    else if (remote != logging.Remote  || port != logging.Port)
                     {
                         mk.Send("/system/logging/action/print");
                         mk.Send("?name=log");
@@ -524,13 +550,14 @@ namespace rosctl
                         }
                         mk.Send("/system/logging/action/set");
                         mk.Send(remoteid);
-                        mk.Send("=remote=" + logging);
+                        mk.Send("=remote=" + logging.Remote);
+                        mk.Send("=remote-port=" + logging.Port);
                         mk.Send(".tag=log-action-remove", true);
                         foreach (string s in mk.Read())
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IP地址:{0},action-change",IpAddr);
+                                Console.WriteLine("IP地址:{0},Action-Change",IpAddr);
                             }
                         }
                     }
@@ -577,10 +604,16 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s == "!re.tag=bandwidth=enabled=true")
+                            foreach(var d in GetDictionary(s))
                             {
-                                bandwidth = true;
-                                break;
+                                if(d.Key == "enabled")
+                                {
+                                    if(d.Value == "true")
+                                    {
+                                        bandwidth = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -606,10 +639,16 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s != "!re.tag=mac-server=allowed-interface-list=none")
+                            foreach(var d in GetDictionary(s))
                             {
-                                mac_server = true;
-                                break;
+                                if(d.Key == "allowed-interface-list")
+                                {
+                                    if(d.Value != "none")
+                                    {
+                                        mac_server = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -622,7 +661,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IP地址:{0},mac-server", IpAddr);
+                                Console.WriteLine("IP地址:{0},Mac-Server", IpAddr);
                             }
                         }
                     }
@@ -634,10 +673,16 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s != "!re.tag=mac-winbox=allowed-interface-list=none")
+                            foreach(var d in GetDictionary(s))
                             {
-                                mac_winbox = true;
-                                break;
+                                if(d.Key == "allowed-interface-list")
+                                {
+                                    if(d.Value != "none")
+                                    {
+                                        mac_winbox = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -650,7 +695,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IP地址:{0},mac-winbox", IpAddr);
+                                Console.WriteLine("IP地址:{0},Mac-Winbox", IpAddr);
                             }
                         }
                     }
@@ -662,10 +707,16 @@ namespace rosctl
                     {
                         if (s.StartsWith("!re"))
                         {
-                            if (s == "!re.tag=mac-ping=enabled=true")
+                            foreach(var d in GetDictionary(s))
                             {
-                                mac_ping = true;
-                                break;
+                                if(d.Key == "enabled")
+                                {
+                                    if(d.Value == "true")
+                                    {
+                                        mac_ping = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -678,7 +729,7 @@ namespace rosctl
                         {
                             if (s.StartsWith("!done"))
                             {
-                                Console.WriteLine("IP地址:{0},mac-ping", IpAddr);
+                                Console.WriteLine("IP地址:{0},Mac-Ping", IpAddr);
                             }
                         }
                     }
@@ -887,8 +938,7 @@ namespace rosctl
                         if (s.StartsWith("!re"))
                         {
                             MKethernet mKethernet = new MKethernet();
-                            string data = s.Substring(16);
-                            foreach (var d in GetDictionary(data))
+                            foreach (var d in GetDictionary(s))
                             {
                                 GetEthernetInfo(d.Key, d.Value, ref mKethernet);
                             }
@@ -918,8 +968,7 @@ namespace rosctl
                         if (s.StartsWith("!re"))
                         {
                             MKwireless mKwireless = new MKwireless();
-                            string data = s.Substring(16);
-                            foreach (var d in GetDictionary(data))
+                            foreach (var d in GetDictionary(s))
                             {
                                 GetWirelessInfo(d.Key, d.Value, ref mKwireless);
                             }
@@ -943,8 +992,7 @@ namespace rosctl
                         if (s.StartsWith("!re"))
                         {
                             MKresource mKresource = new MKresource();
-                            string data = s.Substring(16);
-                            foreach (var d in GetDictionary(data))
+                            foreach (var d in GetDictionary(s))
                             {
                                 GetResourceInfo(d.Key, d.Value, ref mKresource); 
                             }
@@ -964,9 +1012,16 @@ namespace rosctl
                     {                      
                         if (s.StartsWith("!re"))
                         {
-                            if (s != "!re.tag=romon=enabled=true")
+                            foreach(var d in GetDictionary(s))
                             {
-                                romonFlag = true;
+                                if(d.Key == "enabled")
+                                {
+                                    if(d.Value == "true")
+                                    {
+                                        romonFlag = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -993,8 +1048,7 @@ namespace rosctl
                         if(s.StartsWith("!re"))
                         {
                             MKhealth mKhealth = new MKhealth();
-                            string data = s.Substring(14);
-                            foreach(var d in GetDictionary(data))
+                            foreach(var d in GetDictionary(s))
                             {
                                 GetHealthInfo(d.Key, d.Value, ref mKhealth);
                             }
@@ -1025,15 +1079,14 @@ namespace rosctl
                     mk.Send("=.proplist=rx-signal");
                     mk.Send("=.proplist=uptime");
                     mk.Send(".tag=capsman",true);
-                    foreach (string t in mk.Read())
+                    foreach (string s in mk.Read())
                     {
-                        if (t.StartsWith("!re"))
+                        if (s.StartsWith("!re"))
                         {
                             MKcapsman mKcapsman = new MKcapsman();
-                            string data = t.Substring(15);
-                            foreach (var s in GetDictionary(data))
+                            foreach (var d in GetDictionary(s))
                             {
-                                GetCapsmanInfo(s.Key, s.Value, ref mKcapsman);
+                                GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
                             }
                             Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},",IpAddr,mKcapsman.SSID,mKcapsman.MacAddress,mKcapsman.Uptime,mKcapsman.RxRate,mKcapsman.TxRate);
                         }
@@ -1190,15 +1243,15 @@ namespace rosctl
             List<string> keys = new List<string>();
             List<string> values = new List<string>();
             string[] datas = data.Split("=");
-            for (int i = 1; i < datas.Length; i++)
+            for (int i = 0; i < datas.Length; i++)
             {
                 if (i % 2 == 1)
                 {
-                    keys.Add(datas[i]);
+                    values.Add(datas[i]);
                 }
                 else
                 {
-                    values.Add(datas[i]);
+                    keys.Add(datas[i]);
                 }
             }
             Dictionary<string, string> keyValue = new Dictionary<string, string>();
