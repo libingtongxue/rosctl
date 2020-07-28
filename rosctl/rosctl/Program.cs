@@ -65,7 +65,7 @@ namespace rosctl
                 if(args[0] == "mndp" && args[1].StartsWith("--show"))
                 {
                     mndp.Start();
-                    TimerMndp.Change(0,5000);
+                    TimerMndp.Change(0,3000);
                     while (!Console.KeyAvailable)
                     {
                         Thread.Sleep(100);
@@ -998,9 +998,9 @@ namespace rosctl
                             {
                                 GetResourceInfo(d.Key, d.Value, ref mKresource); 
                             }
-                            double free_mem = (Convert.ToDouble( mKresource.Free_Memory)/Convert.ToDouble(mKresource.Total_Memory));
-                            double free_hdd = (Convert.ToDouble(mKresource.Free_Hdd_Space)/Convert.ToDouble(mKresource.Total_Hdd_Space));
-                            Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, free_mem, free_hdd);
+                            double used_mem = ((Convert.ToDouble(mKresource.Total_Memory) - Convert.ToDouble(mKresource.Free_Memory))/Convert.ToDouble(mKresource.Total_Memory));
+                            double used_hdd = ((Convert.ToDouble(mKresource.Total_Hdd_Space) - Convert.ToDouble(mKresource.Free_Hdd_Space))/Convert.ToDouble(mKresource.Total_Hdd_Space));
+                            Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, used_mem, used_hdd);
                         }
                     }
                 }
@@ -1058,18 +1058,6 @@ namespace rosctl
                         }
                     }
                 }
-                if (reboot)
-                {
-                    mk.Send("/system/reboot");
-                    mk.Send(".tag=reboot",true);
-                    foreach(string s in mk.Read())
-                    {
-                        if(s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址{0},重启",IpAddr);
-                        }
-                    }
-                }
                 if (capsman)
                 {
                     mk.Send("/caps-man/registration-table/print");
@@ -1091,6 +1079,18 @@ namespace rosctl
                                 GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
                             }
                             Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},",IpAddr,mKcapsman.SSID,mKcapsman.MacAddress,mKcapsman.Uptime,mKcapsman.RxRate,mKcapsman.TxRate);
+                        }
+                    }
+                }  
+                if (reboot)
+                {
+                    mk.Send("/system/reboot");
+                    mk.Send(".tag=reboot",true);
+                    foreach(string s in mk.Read())
+                    {
+                        if(s.StartsWith("!done"))
+                        {
+                            Console.WriteLine("IP地址{0},重启",IpAddr);
                         }
                     }
                 }
