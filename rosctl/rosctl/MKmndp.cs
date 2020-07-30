@@ -115,7 +115,7 @@ namespace rosctl
                                 ReadBytes(binaryReader, ref mkInfo);
                                 foreach (MKInfo t in mkInfos)
                                 {
-                                    if (t.IPAddr == mkInfo.IPAddr)
+                                    if (t.IPAddr == mkInfo.IPAddr && t.MacAddr == mkInfo.MacAddr)
                                     {
                                         int i = mkInfos.IndexOf(t);
                                         ListRemove lr = new ListRemove(MKInfoRemove);
