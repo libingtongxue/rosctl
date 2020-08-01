@@ -450,7 +450,7 @@ namespace rosctl
                         mk.Send("=name=log");
                         mk.Send("=target=remote");
                         mk.Send("=remote=" + logging.Remote);
-                        mk.Send("=remote-port" + logging.Port);
+                        mk.Send("=remote-port=" + logging.Port);
                         mk.Send("=bsd-syslog=yes");
                         mk.Send(".tag=action", true);
                         foreach (string s in mk.Read())
@@ -1107,7 +1107,6 @@ namespace rosctl
                         }
                     }
                 }
-
                 if (resource)
                 {
                     mk.Send("/system/resource/print");
