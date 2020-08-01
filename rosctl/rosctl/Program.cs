@@ -15,10 +15,12 @@ namespace rosctl
         static readonly MKuser user = new MKuser();
         static readonly MKlogging logging = new MKlogging();
         static readonly MKntp ntp = new MKntp();
+        static readonly Ftp ftp = new Ftp();
         static string newPassword = "";
         static bool loggingFlag = false;
         static bool ntpFlag = false;
         static bool snmpFlag = false;
+        static bool ftpFlag = false;
         static bool auto = false;
         static bool wireless = false;
         static bool ethernet = false;
@@ -266,6 +268,41 @@ namespace rosctl
                         ntp.Primary = st;
                     }
                     ntpFlag = true;
+                }
+                else if (args[i].StartsWith("--ftp"))
+                {
+                    string st = args[i].Substring(5);
+                    if (st.Length == 0)
+                    {
+                        int t = i + 1;
+                        if (t >= args.Length)
+                        {
+                            Console.WriteLine("FTP Address Is Null");
+                        }
+                        else
+                        {
+                            ftp.Address = args[t];
+                        }
+                        int c = i + 2;
+                        if (c >= args.Length)
+                        {
+                            Console.WriteLine("FTP username Is Null");
+                        }
+                        else
+                        {
+                            ftp.Username = args[c];
+                        }
+                        int l = i + 3;
+                        if (l >= args.Length)
+                        {
+                            Console.WriteLine("FTP password Is Null");
+                        }
+                        else
+                        {
+                            ftp.Password = args[l];
+                        }
+                    }
+                    ftpFlag = true;
                 }
                 else if (args[i].StartsWith("--ethernet"))
                 {
@@ -593,6 +630,98 @@ namespace rosctl
                         if (s.StartsWith("!done"))
                         {
                             Console.WriteLine("IpAddr:{0},Snmp", IpAddr);
+                        }
+                    }
+                }
+                if (ftpFlag)
+                {
+                    mk.Send("/system/identity/print");
+                    mk.Send(".tag=identity", true);
+                    string identity = "";
+                    foreach (string s in mk.Read())
+                    {
+                        if (s.StartsWith("!re"))
+                        {
+                            foreach (var d in GetDictionary(s))
+                            {
+                                if (d.Key == "name")
+                                {
+                                    identity = d.Value;
+                                }
+                            }
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(identity))
+                    {
+                        mk.Send("/export");
+                        mk.Send("=file=" + identity); ;
+                        mk.Send(".tag=export", true);
+                        bool export = false;
+                        foreach (string s in mk.Read())
+                        {
+                            if (s.StartsWith("!done"))
+                            {
+                                export = true;
+                            }
+                        }
+                        if (export)
+                        {
+                            if (!string.IsNullOrEmpty(ftp.Address) && !string.IsNullOrEmpty(ftp.Username) && !string.IsNullOrEmpty(ftp.Password))
+                            {
+                                mk.Send("/tool/fetch");
+                                mk.Send("=address=" + ftp.Address);
+                                mk.Send("=src-path=" + identity + ".rsc");
+                                mk.Send("=user=" + ftp.Username);
+                                mk.Send("=password=" + ftp.Password);
+                                mk.Send("=mode=ftp");
+                                mk.Send("=dst-path=" + identity + "." + DateTime.Now.ToShortDateString() + ".rsc");
+                                mk.Send("=upload=yes");
+                                mk.Send(".tag=fetch", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        foreach (var d in GetDictionary(s))
+                                        {
+                                            if (!d.Key.StartsWith("!re"))
+                                            {
+                                                Console.WriteLine("{0}:{1}", d.Key, d.Value);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        mk.Send("/file/print");
+                        mk.Send("?name=" + identity + ".rsc");
+                        mk.Send("=.proplist=.id");
+                        mk.Send(".tag=remove-id", true);
+                        string fileid = "";
+                        foreach (string s in mk.Read())
+                        {
+                            if (s.StartsWith("!re"))
+                            {
+                                foreach (var d in GetDictionary(s))
+                                {
+                                    if (d.Key == ".id")
+                                    {
+                                        fileid = d.Value;
+                                    }
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty("fileid"))
+                        {
+                            mk.Send("/file/remove");
+                            mk.Send("=.id=" + fileid);
+                            mk.Send(".tag=remove", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},备份操作完成！", IpAddr);
+                                }
+                            }
                         }
                     }
                 }
@@ -978,6 +1107,7 @@ namespace rosctl
                         }
                     }
                 }
+
                 if (resource)
                 {
                     mk.Send("/system/resource/print");
