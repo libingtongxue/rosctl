@@ -388,7 +388,7 @@ namespace rosctl
                             mk.Send("/tool/bandwidth-server/print");
                             mk.Send("=.proplist=enabled");
                             mk.Send(".tag=bandwidth", true);
-                            bool bandwidth = false;
+                            bool _bandwidth = false;
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
@@ -399,14 +399,14 @@ namespace rosctl
                                         {
                                             if (d.Value == "true")
                                             {
-                                                bandwidth = true;
+                                                _bandwidth = true;
                                                 break;
                                             }
                                         }
                                     }
                                 }
                             }
-                            if (bandwidth)
+                            if (_bandwidth)
                             {
                                 mk.Send("/tool/bandwidth-server/set");
                                 mk.Send("=enabled=no");
@@ -423,7 +423,7 @@ namespace rosctl
                             mk.Send("/tool/mac-server/print");
                             mk.Send("=.proplist=allowed-interface-list");
                             mk.Send(".tag=mac-server", true);
-                            bool mac_server = false;
+                            bool _mac_server = false;
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
@@ -434,14 +434,14 @@ namespace rosctl
                                         {
                                             if (d.Value != "none")
                                             {
-                                                mac_server = true;
+                                                _mac_server = true;
                                                 break;
                                             }
                                         }
                                     }
                                 }
                             }
-                            if (mac_server)
+                            if (_mac_server)
                             {
                                 mk.Send("/tool/mac-server/set");
                                 mk.Send("=allowed-interface-list=none");
@@ -457,7 +457,7 @@ namespace rosctl
                             mk.Send("/tool/mac-server/mac-winbox/print");
                             mk.Send("=.proplist=allowed-interface-list");
                             mk.Send(".tag=mac-winbox", true);
-                            bool mac_winbox = false;
+                            bool _mac_winbox = false;
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
@@ -468,14 +468,14 @@ namespace rosctl
                                         {
                                             if (d.Value != "none")
                                             {
-                                                mac_winbox = true;
+                                                _mac_winbox = true;
                                                 break;
                                             }
                                         }
                                     }
                                 }
                             }
-                            if (mac_winbox)
+                            if (_mac_winbox)
                             {
                                 mk.Send("/tool/mac-server/mac-winbox/set");
                                 mk.Send("=allowed-interface-list=none");
@@ -491,7 +491,7 @@ namespace rosctl
                             mk.Send("/tool/mac-server/ping/print");
                             mk.Send("=.proplist=enabled");
                             mk.Send(".tag=mac-ping", true);
-                            bool mac_ping = false;
+                            bool _mac_ping = false;
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
@@ -502,14 +502,14 @@ namespace rosctl
                                         {
                                             if (d.Value == "true")
                                             {
-                                                mac_ping = true;
+                                                _mac_ping = true;
                                                 break;
                                             }
                                         }
                                     }
                                 }
                             }
-                            if (mac_ping)
+                            if (_mac_ping)
                             {
                                 mk.Send("/tool/mac-server/ping/set");
                                 mk.Send("=enabled=no");
@@ -559,16 +559,16 @@ namespace rosctl
                             mk.Send("?name=www-ssl");
                             mk.Send("=.proplist=.id");
                             mk.Send(".tag=service-wwwssl", true);
-                            string wwwssl_id = "";
+                            string _wwwssl_id = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
                                 {
-                                    wwwssl_id = s.Substring(22);
+                                    _wwwssl_id = s.Substring(22);
                                 }
                             }
                             mk.Send("/ip/service/set");
-                            mk.Send(wwwssl_id);
+                            mk.Send(_wwwssl_id);
                             mk.Send("=disabled=yes");
                             mk.Send(".tag=wwwssl", true);
                             foreach (string s in mk.Read())
@@ -583,16 +583,16 @@ namespace rosctl
                             mk.Send("?name=www");
                             mk.Send("=.proplist=.id");
                             mk.Send(".tag=service-www", true);
-                            string www_id = "";
+                            string _www_id = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
                                 {
-                                    www_id = s.Substring(19);
+                                    _www_id = s.Substring(19);
                                 }
                             }
                             mk.Send("/ip/service/set");
-                            mk.Send(www_id);
+                            mk.Send(_www_id);
                             mk.Send("=disabled=yes");
                             mk.Send(".tag=www", true);
                             foreach (string s in mk.Read())
@@ -607,16 +607,16 @@ namespace rosctl
                             mk.Send("?name=telnet");
                             mk.Send("=.proplist=.id");
                             mk.Send(".tag=service-telnet", true);
-                            string telnet_id = "";
+                            string _telnet_id = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
                                 {
-                                    telnet_id = s.Substring(22);
+                                    _telnet_id = s.Substring(22);
                                 }
                             }
                             mk.Send("/ip/service/set");
-                            mk.Send(telnet_id);
+                            mk.Send(_telnet_id);
                             mk.Send("=disabled=yes");
                             mk.Send(".tag=telnet", true);
                             foreach (string s in mk.Read())
@@ -631,16 +631,16 @@ namespace rosctl
                             mk.Send("?name=ssh");
                             mk.Send("=.proplist=.id");
                             mk.Send(".tag=service-ssh", true);
-                            string ssh_id = "";
+                            string _ssh_id = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
                                 {
-                                    ssh_id = s.Substring(19);
+                                    _ssh_id = s.Substring(19);
                                 }
                             }
                             mk.Send("/ip/service/set");
-                            mk.Send(ssh_id);
+                            mk.Send(_ssh_id);
                             mk.Send("=disabled=yes");
                             mk.Send(".tag=ssh", true);
                             foreach (string s in mk.Read())
@@ -655,16 +655,16 @@ namespace rosctl
                             mk.Send("?name=ftp");
                             mk.Send("=.proplist=.id");
                             mk.Send(".tag=service-ftp", true);
-                            string ftp_id = "";
+                            string _ftp_id = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
                                 {
-                                    ftp_id = s.Substring(19);
+                                    _ftp_id = s.Substring(19);
                                 }
                             }
                             mk.Send("/ip/service/set");
-                            mk.Send(ftp_id);
+                            mk.Send(_ftp_id);
                             mk.Send("=disabled=yes");
                             mk.Send(".tag=ftp", true);
                             foreach (string s in mk.Read())
@@ -679,16 +679,16 @@ namespace rosctl
                             mk.Send("?name=api-ssl");
                             mk.Send("=.proplist=.id");
                             mk.Send(".tag=service-apissl", true);
-                            string apissl_id = "";
+                            string _apissl_id = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
                                 {
-                                    apissl_id = s.Substring(22);
+                                    _apissl_id = s.Substring(22);
                                 }
                             }
                             mk.Send("/ip/service/set");
-                            mk.Send(apissl_id);
+                            mk.Send(_apissl_id);
                             mk.Send("=disabled=yes");
                             mk.Send(".tag=apissl", true);
                             foreach (string s in mk.Read())
@@ -721,8 +721,8 @@ namespace rosctl
                             mk.Send("=.proplist=remote");
                             mk.Send("=.proplist=remote-port");
                             mk.Send(".tag=log-action", true);
-                            string remote = "";
-                            string port = "";
+                            string _remote = "";
+                            string _port = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
@@ -731,16 +731,16 @@ namespace rosctl
                                     {
                                         if (d.Key == "remote")
                                         {
-                                            remote = d.Value;
+                                            _remote = d.Value;
                                         }
                                         if (d.Key == "remote-port")
                                         {
-                                            port = d.Value;
+                                            _port = d.Value;
                                         }
                                     }
                                 }
                             }
-                            if (string.IsNullOrEmpty(remote))
+                            if (string.IsNullOrEmpty(_remote))
                             {
                                 mk.Send("/system/logging/action/add");
                                 mk.Send("=name=log");
@@ -869,7 +869,7 @@ namespace rosctl
                                     }
                                 }
                             }
-                            else if (remote != logging.Remote || port != logging.Port)
+                            else if (_remote != logging.Remote || _port != logging.Port)
                             {
                                 mk.Send("/system/logging/action/print");
                                 mk.Send("?name=log");
@@ -1113,7 +1113,7 @@ namespace rosctl
                             mk.Send("/tool/romon/print");
                             mk.Send("=.proplist=enabled");
                             mk.Send(".tag=romon", true);
-                            bool romonFlag = false;
+                            bool _romon = false;
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!re"))
@@ -1124,14 +1124,14 @@ namespace rosctl
                                         {
                                             if (d.Value != "true")
                                             {
-                                                romonFlag = true;
+                                                _romon = true;
                                                 break;
                                             }
                                         }
                                     }
                                 }
                             }
-                            if (romonFlag)
+                            if (_romon)
                             {
                                 mk.Send("/tool/romon/set");
                                 mk.Send("=enabled=yes");
@@ -1681,10 +1681,6 @@ namespace rosctl
                 Console.WriteLine("IP地址:{0},账号密码错误", IpAddr);
             }
             mk.Close();
-            for(int i = 0; i < Console.WindowWidth ;i++)
-            {
-                Console.Write("-");
-            }    
         }
         static void GetCapsmanInfo(string key,string value,ref MKcapsman mKcapsman)
         {
