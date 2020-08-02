@@ -332,13 +332,9 @@ namespace rosctl
             Console.WriteLine("rosctl mndp -u root -p password --ethernet");
             Console.WriteLine("rosctl mndp -u root -p password --resource");
             Console.WriteLine("rosctl mndp -u root -p password --wireless");
-            Console.WriteLine("rosctl mndp -u root -p password --neighbor");
+            Console.WriteLine("rosctl mndp -u root -p password --capsman");
+            Console.WriteLine("rosctl mndp -u root -p password --health");
             Console.WriteLine("rosctl mndp -u root -p password --romon");
-            Console.WriteLine("rosctl mndp -u root -p password --new password");
-            Console.WriteLine("rosctl mndp -u root -p password --logging remote remote-port");
-            Console.WriteLine("rosctl mndp -u root -p password --snmp target contact location");
-            Console.WriteLine("rosctl mndp -u root -p password --ntp primary");
-            Console.WriteLine("rosctl mndp -u root -p password --new password --logging remote remote-port --ntp primary --snmp target contact location");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --auto");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --resource");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --ethernet");
@@ -346,6 +342,7 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --health");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --reboot");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --capsman");
+            Console.WriteLine("rosctl 192.168.1.3 -u root -p password --romon");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --resource");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4,192.168.112.5 -u root -p password --ethernet");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --wireless");
@@ -1595,6 +1592,27 @@ namespace rosctl
                             #endregion
                             break;
                         case "capsman":
+                            mk.Send("/caps-man/registration-table/print");
+                            mk.Send("=.proplist=interface");
+                            mk.Send("=.proplist=ssid");
+                            mk.Send("=.proplist=mac-address");
+                            mk.Send("=.proplist=rx-rate");
+                            mk.Send("=.proplist=tx-rate");
+                            mk.Send("=.proplist=rx-signal");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send(".tag=capsman", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKcapsman mKcapsman = new MKcapsman();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
+                                    }
+                                    Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},", IpAddr, mKcapsman.SSID, mKcapsman.MacAddress, mKcapsman.Uptime, mKcapsman.RxRate, mKcapsman.TxRate);
+                                }
+                            }
                             break;
                         case "resource":
                             mk.Send("/system/resource/print");
