@@ -17,6 +17,7 @@ namespace rosctl
         static readonly MKlogging logging = new MKlogging();
         static readonly MKpassword newPassword = new MKpassword();
         static readonly MKntp ntp = new MKntp();
+        static readonly MKdns dns = new MKdns();
         static readonly MKupdate update = new MKupdate();
         static readonly Ftp ftp = new Ftp();
         static void Main(string[] args)
@@ -343,6 +344,27 @@ namespace rosctl
                         update.Channel = st;
                     }
                     _commands.Add("update");
+                }
+                else if (args[i].StartsWith("--dns"))
+                {
+                    string st = args[i].Substring(8);
+                    if (st.Length == 0)
+                    {
+                        int t = i + 1;
+                        if (t >= args.Length)
+                        {
+                            Console.WriteLine("DNS Is Null");
+                        }
+                        else
+                        {
+                            dns.Address = args[t];
+                        }
+                    }
+                    else
+                    {
+                        dns.Address = st;
+                    }
+                    _commands.Add("dns");
                 }
             }
         }
@@ -1158,6 +1180,23 @@ namespace rosctl
                             #endregion
                             break;
                         case "ntp":
+                            mk.Send("/system/clock/set");
+                            mk.Send("=time-zone-name=Asia/Chongqing");
+                            mk.Send(".tag=time-zone", true);
+                            foreach(string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},时区配置重庆", IpAddr);
+                                }
+                            }
                             mk.Send("/system/ntp/client/set");
                             mk.Send("=enabled=yes");
                             mk.Send("=primary-ntp=" + ntp.Primary);
@@ -1173,7 +1212,7 @@ namespace rosctl
                                 }
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IP地址:{0},Ntp", IpAddr);
+                                    Console.WriteLine("IP地址:{0},NTP配置完成", IpAddr);
                                 }
                             }
                             break;
@@ -1563,7 +1602,7 @@ namespace rosctl
                                 }
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IP地址{0},Channel");
+                                    Console.WriteLine("IP地址{0},Channel", IpAddr);
                                 }
                             }
                             mk.Send("/system/package/update/check-for-updates");
@@ -1639,6 +1678,25 @@ namespace rosctl
                                     {
                                         Console.WriteLine("IP地址{0}:升级完成", IpAddr);
                                     }
+                                }
+                            }
+                            break;
+                        case "dns":
+                            mk.Send("/ip/dns/set");
+                            mk.Send("=servers=" + dns.Address);
+                            mk.Send(".tag=dns", true);
+                            foreach(string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", d.Key, d.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址{0},DNS配置成功", IpAddr);
                                 }
                             }
                             break;
