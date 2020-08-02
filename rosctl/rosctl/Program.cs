@@ -7,29 +7,17 @@ namespace rosctl
 {
     class Program
     {
-        static readonly Timer Timer= new Timer(Timer_Callback, null, Timeout.Infinite, Timeout.Infinite);
+        static readonly Timer Timer= new Timer(Timer_Mndp_Callback, null, Timeout.Infinite, Timeout.Infinite);
         static readonly Timer TimerMndp = new Timer(Mndp_Callback,null,Timeout.Infinite,Timeout.Infinite);
         static readonly List<string> IpAddrs = new List<string>();
+        static readonly List<string> _commands = new List<string>();
         static readonly MKmndp mndp = new MKmndp();
         static readonly Snmp snmp = new Snmp();
         static readonly MKuser user = new MKuser();
         static readonly MKlogging logging = new MKlogging();
+        static readonly MKpassword newPassword = new MKpassword();
         static readonly MKntp ntp = new MKntp();
         static readonly Ftp ftp = new Ftp();
-        static string newPassword = "";
-        static bool loggingFlag = false;
-        static bool ntpFlag = false;
-        static bool snmpFlag = false;
-        static bool ftpFlag = false;
-        static bool auto = false;
-        static bool wireless = false;
-        static bool ethernet = false;
-        static bool resource = false;
-        static bool neighbor = false;
-        static bool romon = false;
-        static bool health = false;
-        static bool reboot = false;
-        static bool capsman = false;
         static void Main(string[] args)
         {
             if (args.Length > 2)
@@ -58,7 +46,7 @@ namespace rosctl
                     ParseArgs(args);
                     foreach (string s in IpAddrs)
                     {
-                        Timer_MK(s);
+                        IPAddr(s);
                     }
                 }
             }
@@ -154,7 +142,7 @@ namespace rosctl
                 }
                 else if (args[i].StartsWith("--auto"))
                 {
-                    auto = true;
+                    _commands.Add("auto");
                 }
                 else if (args[i].StartsWith("--new"))
                 {
@@ -168,14 +156,14 @@ namespace rosctl
                         }
                         else
                         {
-                            newPassword = args[t];
+                            newPassword.Password = args[t];
                         }
                     }
                     else
                     {
-                        newPassword = st;
+                        newPassword.Password = st;
                     }
-
+                    _commands.Add("new");
                 }
                 else if (args[i].StartsWith("--logging"))
                 {
@@ -194,7 +182,6 @@ namespace rosctl
                         int p = i + 2;
                         if(p >= args.Length)
                         {
-                            logging.Port = "514";
                             Console.WriteLine("Logging Port Is 514");
                         }
                         else
@@ -205,9 +192,8 @@ namespace rosctl
                     else
                     {
                         logging.Remote = st;
-                        logging.Port = "514";
                     }
-                    loggingFlag = true;
+                    _commands.Add("logging");
                 }
                 else if (args[i].StartsWith("--snmp"))
                 {
@@ -246,7 +232,7 @@ namespace rosctl
                     {
                         snmp.Target = st;
                     }
-                    snmpFlag = true;
+                    _commands.Add("snmp");
                 }
                 else if (args[i].StartsWith("--ntp"))
                 {
@@ -267,7 +253,7 @@ namespace rosctl
                     {
                         ntp.Primary = st;
                     }
-                    ntpFlag = true;
+                    _commands.Add("ntp");
                 }
                 else if (args[i].StartsWith("--ftp"))
                 {
@@ -302,39 +288,39 @@ namespace rosctl
                             ftp.Password = args[l];
                         }
                     }
-                    ftpFlag = true;
+                    _commands.Add("ftp");
                 }
                 else if (args[i].StartsWith("--ethernet"))
                 {
-                    ethernet = true;
+                    _commands.Add("ethernet");
                 }
                 else if (args[i].StartsWith("--resource"))
                 {
-                    resource = true;
+                    _commands.Add("resource");
                 }
                 else if (args[i].StartsWith("--wireless"))
                 {
-                    wireless = true;
+                    _commands.Add("wireless");
                 }
                 else if (args[i].StartsWith("--neighbor"))
                 {
-                    neighbor = true;
+                    _commands.Add("neighbor");
                 }
                 else if (args[i].StartsWith("--romon"))
                 {
-                    romon = true;
+                    _commands.Add("romon");
                 }
                 else if (args[i].StartsWith("--health"))
                 {
-                    health = true;
+                    _commands.Add("health");
                 }
                 else if(args[i].StartsWith("--reboot"))
                 {
-                    reboot = true;
+                    _commands.Add("reboot");
                 }
                 else if(args[i].StartsWith("--capsman"))
                 {
-                    capsman = true;
+                    _commands.Add("capsman");
                 }
             }
         }
@@ -379,13 +365,842 @@ namespace rosctl
             Console.WriteLine("Mobile:18908035651");
             Console.WriteLine("Phone:028-87488587");
         }
-        private static void Timer_Callback(object state)
+        private static void Timer_Mndp_Callback(object state)
         {
             Console.Clear();
             Console.SetCursorPosition(0,0);
             foreach (string t in mndp.GetMKInfoIpAddrs)
             {
                 Timer_MK(t);
+            }
+        }
+        private static void IPAddr(string IpAddr)
+        {
+            MK mk = new MK(IpAddr);
+            if (mk.Login(user.Username, user.Password))
+            {
+                foreach (string command in _commands)
+                {
+                    switch (command)
+                    {
+                        case "auto":
+                            #region
+                            mk.Send("/tool/bandwidth-server/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=bandwidth", true);
+                            bool bandwidth = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value == "true")
+                                            {
+                                                bandwidth = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (bandwidth)
+                            {
+                                mk.Send("/tool/bandwidth-server/set");
+                                mk.Send("=enabled=no");
+                                mk.Send("=authenticate=no");
+                                mk.Send(".tag=bandwidth", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Bandwidth", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/print");
+                            mk.Send("=.proplist=allowed-interface-list");
+                            mk.Send(".tag=mac-server", true);
+                            bool mac_server = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "allowed-interface-list")
+                                        {
+                                            if (d.Value != "none")
+                                            {
+                                                mac_server = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (mac_server)
+                            {
+                                mk.Send("/tool/mac-server/set");
+                                mk.Send("=allowed-interface-list=none");
+                                mk.Send(".tag=mac-server", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Server", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/mac-winbox/print");
+                            mk.Send("=.proplist=allowed-interface-list");
+                            mk.Send(".tag=mac-winbox", true);
+                            bool mac_winbox = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "allowed-interface-list")
+                                        {
+                                            if (d.Value != "none")
+                                            {
+                                                mac_winbox = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (mac_winbox)
+                            {
+                                mk.Send("/tool/mac-server/mac-winbox/set");
+                                mk.Send("=allowed-interface-list=none");
+                                mk.Send(".tag=mac-winbox", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Winbox", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/ping/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=mac-ping", true);
+                            bool mac_ping = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value == "true")
+                                            {
+                                                mac_ping = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (mac_ping)
+                            {
+                                mk.Send("/tool/mac-server/ping/set");
+                                mk.Send("=enabled=no");
+                                mk.Send(".tag=mac-ping", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Ping", IpAddr);
+                                    }
+                                }
+                            }
+                            //
+                            mk.Send("/system/watchdog/set");
+                            mk.Send("=watchdog-timer=no");
+                            mk.Send(".tag=watchdog", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Watchdog", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/cloud/set");
+                            mk.Send("=ddns-enabled=yes");
+                            //mk.Send("=update-time=yes");
+                            //mk.Send("=ddns-uptime-interval=1m");
+                            mk.Send(".tag=cloud", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Cloud", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/cloud/advanced/set");
+                            mk.Send("=use-local-address=yes");
+                            mk.Send(".tag=cloud-advanced", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Advanced", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=www-ssl");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-wwwssl", true);
+                            string wwwssl_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    wwwssl_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(wwwssl_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=wwwssl", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=www");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-www", true);
+                            string www_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    www_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(www_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=www", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},www", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=telnet");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-telnet", true);
+                            string telnet_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    telnet_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(telnet_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=telnet", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},telnet", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=ssh");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-ssh", true);
+                            string ssh_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    ssh_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(ssh_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=ssh", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},ssh", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=ftp");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-ftp", true);
+                            string ftp_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    ftp_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(ftp_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=ftp", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},ftp", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=api-ssl");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-apissl", true);
+                            string apissl_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    apissl_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(apissl_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=apissl", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},api-ssl", IpAddr);
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "new":
+                            mk.Send("/password");
+                            mk.Send("=old-password=" + user.Password);
+                            mk.Send("=new-password=" + newPassword.Password);
+                            mk.Send("=confirm-new-password=" + newPassword.Password);
+                            mk.Send(".tag=password", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Password", IpAddr);
+                                }
+                            }
+                            break;
+                        case "logging":
+                            #region
+                            mk.Send("/system/logging/action/print");
+                            mk.Send("?name=log");
+                            mk.Send("=.proplist=remote");
+                            mk.Send("=.proplist=remote-port");
+                            mk.Send(".tag=log-action", true);
+                            string remote = "";
+                            string port = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "remote")
+                                        {
+                                            remote = d.Value;
+                                        }
+                                        if (d.Key == "remote-port")
+                                        {
+                                            port = d.Value;
+                                        }
+                                    }
+                                }
+                            }
+                            if (string.IsNullOrEmpty(remote))
+                            {
+                                mk.Send("/system/logging/action/add");
+                                mk.Send("=name=log");
+                                mk.Send("=target=remote");
+                                mk.Send("=remote=" + logging.Remote);
+                                mk.Send("=remote-port=" + logging.Port);
+                                mk.Send("=bsd-syslog=yes");
+                                mk.Send(".tag=action", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Action-Add", IpAddr);
+                                    }
+                                }
+                                mk.Send("/system/logging/print");
+                                mk.Send("?action=log");
+                                mk.Send("?topics=warning");
+                                mk.Send("?#&");
+                                mk.Send("=.proplist=.id");
+                                mk.Send(".tag=warning", true);
+                                bool warning = true;
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        warning = false;
+                                    }
+                                }
+                                if (warning)
+                                {
+                                    mk.Send("/system/logging/add");
+                                    mk.Send("=topics=warning");
+                                    mk.Send("=action=log");
+                                    mk.Send(".tag=warning", true);
+                                    foreach (string s in mk.Read())
+                                    {
+                                        if (s.StartsWith("!done"))
+                                        {
+                                            Console.WriteLine("IP地址:{0},Logging-warning", IpAddr);
+                                        }
+                                    }
+                                }
+                                mk.Send("/system/logging/print");
+                                mk.Send("?action=log");
+                                mk.Send("?topics=error");
+                                mk.Send("?#&");
+                                mk.Send("=.proplist=.id");
+                                mk.Send(".tag=error", true);
+                                bool error = true;
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        error = false;
+                                    }
+                                }
+                                if (error)
+                                {
+                                    mk.Send("/system/logging/add");
+                                    mk.Send("=topics=error");
+                                    mk.Send("=action=log");
+                                    mk.Send(".tag=error", true);
+                                    foreach (string s in mk.Read())
+                                    {
+                                        if (s.StartsWith("!done"))
+                                        {
+                                            Console.WriteLine("IP地址:{0},Logging-Error", IpAddr);
+                                        }
+                                    }
+                                }
+                                mk.Send("/system/logging/print");
+                                mk.Send("?action=log");
+                                mk.Send("?topics=info");
+                                mk.Send("?#&");
+                                mk.Send("=.proplist=.id");
+                                mk.Send(".tag=info", true);
+                                bool info = true;
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        info = false;
+                                    }
+                                }
+                                if (info)
+                                {
+                                    mk.Send("/system/logging/add");
+                                    mk.Send("=topics=info");
+                                    mk.Send("=action=log");
+                                    mk.Send(".tag=info", true);
+                                    foreach (string s in mk.Read())
+                                    {
+                                        if (s.StartsWith("!done"))
+                                        {
+                                            Console.WriteLine("IP地址:{0},Logging-Info", IpAddr);
+                                        }
+                                    }
+                                }
+                                mk.Send("/system/logging/print");
+                                mk.Send("?action=log");
+                                mk.Send("?topics=critical");
+                                mk.Send("?#&");
+                                mk.Send("=.proplist=.id");
+                                mk.Send(".tag=critical", true);
+                                bool critical = true;
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        critical = false;
+                                    }
+                                }
+                                if (critical)
+                                {
+                                    mk.Send("/system/logging/add");
+                                    mk.Send("=topics=critical");
+                                    mk.Send("=action=log");
+                                    mk.Send(".tag=critical", true);
+                                    foreach (string s in mk.Read())
+                                    {
+                                        if (s.StartsWith("!done"))
+                                        {
+                                            Console.WriteLine("IP地址:{0},Logging-Critical", IpAddr);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (remote != logging.Remote || port != logging.Port)
+                            {
+                                mk.Send("/system/logging/action/print");
+                                mk.Send("?name=log");
+                                mk.Send("=.proplist=.id");
+                                mk.Send(".tag=log-action-id", true);
+                                string remoteid = "";
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        remoteid = s.Substring(21);
+                                    }
+                                }
+                                mk.Send("/system/logging/action/set");
+                                mk.Send(remoteid);
+                                mk.Send("=remote=" + logging.Remote);
+                                mk.Send("=remote-port=" + logging.Port);
+                                mk.Send(".tag=log-action-remove", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Action-Change", IpAddr);
+                                    }
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "ntp":
+                            mk.Send("/system/ntp/client/set");
+                            mk.Send("=enabled=yes");
+                            mk.Send("=primary-ntp=" + ntp.Primary);
+                            mk.Send(".tag=ntp", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Ntp", IpAddr);
+                                }
+                            }
+                            break;
+                        case "snmp":
+                            mk.Send("/snmp/set");
+                            mk.Send("=enabled=yes");
+                            mk.Send("=contact=" + (string.IsNullOrEmpty(snmp.Contact) ? "LiBing" : snmp.Contact));
+                            mk.Send("=location=" + (string.IsNullOrEmpty(snmp.Location) ? "18908035651" : snmp.Location));
+                            mk.Send("=trap-target=" + (string.IsNullOrEmpty(snmp.Target) ? "192.168.112.2" : snmp.Target));
+                            mk.Send("=trap-version=2");
+                            mk.Send("=trap-generators=interface");
+                            mk.Send(".tag=snmp", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IpAddr:{0},Snmp", IpAddr);
+                                }
+                            }
+                            break;
+                        case "ftp":
+                            #region
+                            mk.Send("/system/identity/print");
+                            mk.Send(".tag=identity", true);
+                            string identity = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "name")
+                                        {
+                                            identity = d.Value;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(identity))
+                            {
+                                mk.Send("/export");
+                                mk.Send("=file=" + identity); ;
+                                mk.Send(".tag=export", true);
+                                bool export = false;
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        export = true;
+                                    }
+                                }
+                                if (export)
+                                {
+                                    if (!string.IsNullOrEmpty(ftp.Address) && !string.IsNullOrEmpty(ftp.Username) && !string.IsNullOrEmpty(ftp.Password))
+                                    {
+                                        mk.Send("/tool/fetch");
+                                        mk.Send("=address=" + ftp.Address);
+                                        mk.Send("=src-path=" + identity + ".rsc");
+                                        mk.Send("=user=" + ftp.Username);
+                                        mk.Send("=password=" + ftp.Password);
+                                        mk.Send("=mode=ftp");
+                                        mk.Send("=dst-path=" + identity + "." + DateTime.Now.ToShortDateString() + ".rsc");
+                                        mk.Send("=upload=yes");
+                                        mk.Send(".tag=fetch", true);
+                                        foreach (string s in mk.Read())
+                                        {
+                                            if (s.StartsWith("!re"))
+                                            {
+                                                foreach (var d in GetDictionary(s))
+                                                {
+                                                    if (!d.Key.StartsWith("!re"))
+                                                    {
+                                                        Console.WriteLine("{0}:{1}", d.Key, d.Value);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                mk.Send("/file/print");
+                                mk.Send("?name=" + identity + ".rsc");
+                                mk.Send("=.proplist=.id");
+                                mk.Send(".tag=remove-id", true);
+                                string fileid = "";
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        foreach (var d in GetDictionary(s))
+                                        {
+                                            if (d.Key == ".id")
+                                            {
+                                                fileid = d.Value;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!string.IsNullOrEmpty("fileid"))
+                                {
+                                    mk.Send("/file/remove");
+                                    mk.Send("=.id=" + fileid);
+                                    mk.Send(".tag=remove", true);
+                                    foreach (string s in mk.Read())
+                                    {
+                                        if (s.StartsWith("!done"))
+                                        {
+                                            Console.WriteLine("IP地址:{0},备份操作完成！", IpAddr);
+                                        }
+                                    }
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "neighbor":
+                            mk.Send("/ip/neighbor/discovery-settings/set");
+                            mk.Send("=discover-interface-list=none");
+                            mk.Send(".tag=neighbor", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},neighbor", IpAddr);
+                                }
+                            }
+                            break;
+                        case "ethernet":
+                            mk.Send("/interface/ethernet/print");
+                            mk.Send("=.proplist=name");
+                            mk.Send("=.proplist=speed");
+                            mk.Send("=.proplist=rx-bytes");
+                            mk.Send("=.proplist=tx-bytes");
+                            mk.Send("=.proplist=rx-packet");
+                            mk.Send("=.proplist=tx-packet");
+                            mk.Send(".tag=ethernet", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKethernet mKethernet = new MKethernet();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetEthernetInfo(d.Key, d.Value, ref mKethernet);
+                                    }
+                                    Console.WriteLine("IP地址:{0},端口:{1},速度:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
+                                }
+                            }
+                            break;
+                        case "wireless":
+                            mk.Send("/interface/wireless/registration-table/print");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send("=.proplist=mac-address");
+                            mk.Send("=.proplist=rx-rate");
+                            mk.Send("=.proplist=tx-rate");
+                            mk.Send("=.proplist=rx-ccq");
+                            mk.Send("=.proplist=tx-ccq");
+                            mk.Send("=.proplist=signal-to-noise");
+                            mk.Send("=.proplist=signal-strength");
+                            mk.Send("=.proplist=signal-strength-ch0");
+                            mk.Send("=.proplist=signal-strength-ch1");
+                            mk.Send("=.proplist=tx-signal-strength");
+                            mk.Send("=.proplist=tx-signal-strength-ch0");
+                            mk.Send("=.proplist=tx-signal-strength-ch1");
+                            mk.Send(".tag=wireless", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKwireless mKwireless = new MKwireless();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetWirelessInfo(d.Key, d.Value, ref mKwireless);
+                                    }
+                                    Console.WriteLine("IP地址:{0},Mac地址:{1},时间:{2},Rx/Tx-Rate:{3}/{4},Rx/Tx-CCQ:{5}/{6},STN:{7}", IpAddr, mKwireless.MacAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
+                                }
+                            }
+                            break;
+                        case "resource":
+                            mk.Send("/system/resource/print");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send("=.proplist=version");
+                            mk.Send("=.proplist=cpu-load");
+                            mk.Send("=.proplist=free-memory");
+                            mk.Send("=.proplist=total-memory");
+                            mk.Send("=.proplist=free-hdd-space");
+                            mk.Send("=.proplist=total-hdd-space");
+                            mk.Send(".tag=resource", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKresource mKresource = new MKresource();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetResourceInfo(d.Key, d.Value, ref mKresource);
+                                    }
+                                    double used_mem = ((Convert.ToDouble(mKresource.Total_Memory) - Convert.ToDouble(mKresource.Free_Memory)) / Convert.ToDouble(mKresource.Total_Memory));
+                                    double used_hdd = ((Convert.ToDouble(mKresource.Total_Hdd_Space) - Convert.ToDouble(mKresource.Free_Hdd_Space)) / Convert.ToDouble(mKresource.Total_Hdd_Space));
+                                    Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, used_mem, used_hdd);
+                                }
+                            }
+                            break;
+                        case "romon":
+                            mk.Send("/tool/romon/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=romon", true);
+                            bool romonFlag = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value != "true")
+                                            {
+                                                romonFlag = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (romonFlag)
+                            {
+                                mk.Send("/tool/romon/set");
+                                mk.Send("=enabled=yes");
+                                mk.Send(".tag=romon", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},RoMon", IpAddr);
+                                    }
+                                }
+                            }
+                            break;
+                        case "health":
+                            mk.Send("/system/health/print");
+                            mk.Send(".tag=health", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKhealth mKhealth = new MKhealth();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetHealthInfo(d.Key, d.Value, ref mKhealth);
+                                    }
+                                    Console.WriteLine("IP地址:{0},电压:{1},温度:{2}", IpAddr, mKhealth.Voltage, mKhealth.Temperature);
+                                }
+                            }
+                            break;
+                        case "capsman":
+                            mk.Send("/caps-man/registration-table/print");
+                            mk.Send("=.proplist=interface");
+                            mk.Send("=.proplist=ssid");
+                            mk.Send("=.proplist=mac-address");
+                            mk.Send("=.proplist=rx-rate");
+                            mk.Send("=.proplist=tx-rate");
+                            mk.Send("=.proplist=rx-signal");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send(".tag=capsman", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKcapsman mKcapsman = new MKcapsman();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
+                                    }
+                                    Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},", IpAddr, mKcapsman.SSID, mKcapsman.MacAddress, mKcapsman.Uptime, mKcapsman.RxRate, mKcapsman.TxRate);
+                                }
+                            }
+                            break;
+                        case "reoot":
+                            mk.Send("/system/reboot");
+                            mk.Send(".tag=reboot", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址{0},重启", IpAddr);
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("IP地址:{0},账号密码错误", IpAddr);
             }
         }
         private static void Mndp_Callback(object state)
@@ -403,824 +1218,461 @@ namespace rosctl
             MK mk = new MK(IpAddr);
             if (mk.Login(user.Username, user.Password))
             {
-                if (!string.IsNullOrEmpty(newPassword))
+                foreach(string command in _commands)
                 {
-                    mk.Send("/password");
-                    mk.Send("=old-password=" + user.Password);
-                    mk.Send("=new-password=" + newPassword);
-                    mk.Send("=confirm-new-password=" + newPassword);
-                    mk.Send(".tag=password", true);
-                    foreach (string s in mk.Read())
+                    switch (command)
                     {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},Password", IpAddr);
-                        }
-                    }
-                }
-                if (loggingFlag)
-                {
-                    mk.Send("/system/logging/action/print");
-                    mk.Send("?name=log");
-                    mk.Send("=.proplist=remote");
-                    mk.Send("=.proplist=remote-port");
-                    mk.Send(".tag=log-action", true);
-                    string remote = "";
-                    string port = "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            foreach (var d in GetDictionary(s))
-                            {
-                                if (d.Key == "remote")
-                                {
-                                    remote = d.Value;
-                                }
-                                if(d.Key =="remote-port")
-                                {
-                                    port = d.Value;
-                                }
-                            }
-                        }
-                    }
-                    if (string.IsNullOrEmpty(remote))
-                    {
-                        mk.Send("/system/logging/action/add");
-                        mk.Send("=name=log");
-                        mk.Send("=target=remote");
-                        mk.Send("=remote=" + logging.Remote);
-                        mk.Send("=remote-port=" + logging.Port);
-                        mk.Send("=bsd-syslog=yes");
-                        mk.Send(".tag=action", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
-                            {
-                                Console.WriteLine("IP地址:{0},Action-Add", IpAddr);
-                            }
-                        }
-                        mk.Send("/system/logging/print");
-                        mk.Send("?action=log");
-                        mk.Send("?topics=warning");
-                        mk.Send("?#&");
-                        mk.Send("=.proplist=.id");
-                        mk.Send(".tag=warning", true);
-                        bool warning = true;
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!re"))
-                            {
-                                warning = false;
-                            }
-                        }
-                        if (warning)
-                        {
-                            mk.Send("/system/logging/add");
-                            mk.Send("=topics=warning");
-                            mk.Send("=action=log");
-                            mk.Send(".tag=warning", true);
+                        case "auto":
+                            #region
+                            mk.Send("/tool/bandwidth-server/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=bandwidth", true);
+                            bool bandwidth = false;
                             foreach (string s in mk.Read())
                             {
-                                if (s.StartsWith("!done"))
+                                if (s.StartsWith("!re"))
                                 {
-                                    Console.WriteLine("IP地址:{0},Logging-warning", IpAddr);
-                                }
-                            }
-                        }
-                        mk.Send("/system/logging/print");
-                        mk.Send("?action=log");
-                        mk.Send("?topics=error");
-                        mk.Send("?#&");
-                        mk.Send("=.proplist=.id");
-                        mk.Send(".tag=error", true);
-                        bool error = true;
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!re"))
-                            {
-                                error = false;
-                            }
-                        }
-                        if (error)
-                        {
-                            mk.Send("/system/logging/add");
-                            mk.Send("=topics=error");
-                            mk.Send("=action=log");
-                            mk.Send(".tag=error", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},Logging-Error", IpAddr);
-                                }
-                            }
-                        }
-                        mk.Send("/system/logging/print");
-                        mk.Send("?action=log");
-                        mk.Send("?topics=info");
-                        mk.Send("?#&");
-                        mk.Send("=.proplist=.id");
-                        mk.Send(".tag=info", true);
-                        bool info = true;
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!re"))
-                            {
-                                info = false;
-                            }
-                        }
-                        if (info)
-                        {
-                            mk.Send("/system/logging/add");
-                            mk.Send("=topics=info");
-                            mk.Send("=action=log");
-                            mk.Send(".tag=info", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},Logging-Info", IpAddr);
-                                }
-                            }
-                        }
-                        mk.Send("/system/logging/print");
-                        mk.Send("?action=log");
-                        mk.Send("?topics=critical");
-                        mk.Send("?#&");
-                        mk.Send("=.proplist=.id");
-                        mk.Send(".tag=critical", true);
-                        bool critical = true;
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!re"))
-                            {
-                                critical = false;
-                            }
-                        }
-                        if (critical)
-                        {
-                            mk.Send("/system/logging/add");
-                            mk.Send("=topics=critical");
-                            mk.Send("=action=log");
-                            mk.Send(".tag=critical", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},Logging-Critical", IpAddr);
-                                }
-                            }
-                        }
-                    }
-                    else if (remote != logging.Remote  || port != logging.Port)
-                    {
-                        mk.Send("/system/logging/action/print");
-                        mk.Send("?name=log");
-                        mk.Send("=.proplist=.id");
-                        mk.Send(".tag=log-action-id", true);
-                        string remoteid = "";
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!re"))
-                            {
-                                remoteid = s.Substring(21);
-                            }
-                        }
-                        mk.Send("/system/logging/action/set");
-                        mk.Send(remoteid);
-                        mk.Send("=remote=" + logging.Remote);
-                        mk.Send("=remote-port=" + logging.Port);
-                        mk.Send(".tag=log-action-remove", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
-                            {
-                                Console.WriteLine("IP地址:{0},Action-Change",IpAddr);
-                            }
-                        }
-                    }
-                }
-                if (ntpFlag)
-                {
-                    mk.Send("/system/ntp/client/set");
-                    mk.Send("=enabled=yes");
-                    mk.Send("=primary-ntp=" + ntp.Primary);
-                    mk.Send(".tag=ntp", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},Ntp", IpAddr);
-                        }
-                    }
-                }
-                if (snmpFlag)
-                {
-                    mk.Send("/snmp/set");
-                    mk.Send("=enabled=yes");
-                    mk.Send("=contact=" + (string.IsNullOrEmpty(snmp.Contact) ? "LiBing" : snmp.Contact));
-                    mk.Send("=location=" + (string.IsNullOrEmpty(snmp.Location) ? "18908035651" : snmp.Location));
-                    mk.Send("=trap-target=" + (string.IsNullOrEmpty(snmp.Target) ? "192.168.112.2" : snmp.Target));
-                    mk.Send("=trap-version=2");
-                    mk.Send("=trap-generators=interface");
-                    mk.Send(".tag=snmp", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IpAddr:{0},Snmp", IpAddr);
-                        }
-                    }
-                }
-                if (ftpFlag)
-                {
-                    mk.Send("/system/identity/print");
-                    mk.Send(".tag=identity", true);
-                    string identity = "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            foreach (var d in GetDictionary(s))
-                            {
-                                if (d.Key == "name")
-                                {
-                                    identity = d.Value;
-                                }
-                            }
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(identity))
-                    {
-                        mk.Send("/export");
-                        mk.Send("=file=" + identity); ;
-                        mk.Send(".tag=export", true);
-                        bool export = false;
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
-                            {
-                                export = true;
-                            }
-                        }
-                        if (export)
-                        {
-                            if (!string.IsNullOrEmpty(ftp.Address) && !string.IsNullOrEmpty(ftp.Username) && !string.IsNullOrEmpty(ftp.Password))
-                            {
-                                mk.Send("/tool/fetch");
-                                mk.Send("=address=" + ftp.Address);
-                                mk.Send("=src-path=" + identity + ".rsc");
-                                mk.Send("=user=" + ftp.Username);
-                                mk.Send("=password=" + ftp.Password);
-                                mk.Send("=mode=ftp");
-                                mk.Send("=dst-path=" + identity + "." + DateTime.Now.ToShortDateString() + ".rsc");
-                                mk.Send("=upload=yes");
-                                mk.Send(".tag=fetch", true);
-                                foreach (string s in mk.Read())
-                                {
-                                    if (s.StartsWith("!re"))
+                                    foreach (var d in GetDictionary(s))
                                     {
-                                        foreach (var d in GetDictionary(s))
+                                        if (d.Key == "enabled")
                                         {
-                                            if (!d.Key.StartsWith("!re"))
+                                            if (d.Value == "true")
                                             {
-                                                Console.WriteLine("{0}:{1}", d.Key, d.Value);
+                                                bandwidth = true;
+                                                break;
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
-                        mk.Send("/file/print");
-                        mk.Send("?name=" + identity + ".rsc");
-                        mk.Send("=.proplist=.id");
-                        mk.Send(".tag=remove-id", true);
-                        string fileid = "";
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!re"))
+                            if (bandwidth)
                             {
-                                foreach (var d in GetDictionary(s))
+                                mk.Send("/tool/bandwidth-server/set");
+                                mk.Send("=enabled=no");
+                                mk.Send("=authenticate=no");
+                                mk.Send(".tag=bandwidth", true);
+                                foreach (string s in mk.Read())
                                 {
-                                    if (d.Key == ".id")
+                                    if (s.StartsWith("!done"))
                                     {
-                                        fileid = d.Value;
+                                        Console.WriteLine("IP地址:{0},Bandwidth", IpAddr);
                                     }
                                 }
                             }
-                        }
-                        if (!string.IsNullOrEmpty("fileid"))
-                        {
-                            mk.Send("/file/remove");
-                            mk.Send("=.id=" + fileid);
-                            mk.Send(".tag=remove", true);
+                            mk.Send("/tool/mac-server/print");
+                            mk.Send("=.proplist=allowed-interface-list");
+                            mk.Send(".tag=mac-server", true);
+                            bool mac_server = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "allowed-interface-list")
+                                        {
+                                            if (d.Value != "none")
+                                            {
+                                                mac_server = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (mac_server)
+                            {
+                                mk.Send("/tool/mac-server/set");
+                                mk.Send("=allowed-interface-list=none");
+                                mk.Send(".tag=mac-server", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Server", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/mac-winbox/print");
+                            mk.Send("=.proplist=allowed-interface-list");
+                            mk.Send(".tag=mac-winbox", true);
+                            bool mac_winbox = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "allowed-interface-list")
+                                        {
+                                            if (d.Value != "none")
+                                            {
+                                                mac_winbox = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (mac_winbox)
+                            {
+                                mk.Send("/tool/mac-server/mac-winbox/set");
+                                mk.Send("=allowed-interface-list=none");
+                                mk.Send(".tag=mac-winbox", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Winbox", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/ping/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=mac-ping", true);
+                            bool mac_ping = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value == "true")
+                                            {
+                                                mac_ping = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (mac_ping)
+                            {
+                                mk.Send("/tool/mac-server/ping/set");
+                                mk.Send("=enabled=no");
+                                mk.Send(".tag=mac-ping", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Ping", IpAddr);
+                                    }
+                                }
+                            }
+                            //
+                            mk.Send("/system/watchdog/set");
+                            mk.Send("=watchdog-timer=no");
+                            mk.Send(".tag=watchdog", true);
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!done"))
                                 {
-                                    Console.WriteLine("IP地址:{0},备份操作完成！", IpAddr);
+                                    Console.WriteLine("IP地址:{0},Watchdog", IpAddr);
                                 }
                             }
-                        }
-                    }
-                }
-                if (auto)
-                {
-                    mk.Send("/tool/bandwidth-server/print");
-                    mk.Send("=.proplist=enabled");
-                    mk.Send(".tag=bandwidth", true);
-                    bool bandwidth = false;
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            foreach(var d in GetDictionary(s))
+                            mk.Send("/ip/cloud/set");
+                            mk.Send("=ddns-enabled=yes");
+                            //mk.Send("=update-time=yes");
+                            //mk.Send("=ddns-uptime-interval=1m");
+                            mk.Send(".tag=cloud", true);
+                            foreach (string s in mk.Read())
                             {
-                                if(d.Key == "enabled")
+                                if (s.StartsWith("!done"))
                                 {
-                                    if(d.Value == "true")
+                                    Console.WriteLine("IP地址:{0},Cloud", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/cloud/advanced/set");
+                            mk.Send("=use-local-address=yes");
+                            mk.Send(".tag=cloud-advanced", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Advanced", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=www-ssl");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-wwwssl", true);
+                            string wwwssl_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    wwwssl_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(wwwssl_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=wwwssl", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=www");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-www", true);
+                            string www_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    www_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(www_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=www", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},www", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=telnet");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-telnet", true);
+                            string telnet_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    telnet_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(telnet_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=telnet", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},telnet", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=ssh");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-ssh", true);
+                            string ssh_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    ssh_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(ssh_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=ssh", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},ssh", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=ftp");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-ftp", true);
+                            string ftp_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    ftp_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(ftp_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=ftp", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},ftp", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=api-ssl");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-apissl", true);
+                            string apissl_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    apissl_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(apissl_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=apissl", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},api-ssl", IpAddr);
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "ethernet":
+                            #region
+                            mk.Send("/interface/ethernet/print");
+                            mk.Send("=.proplist=name");
+                            mk.Send("=.proplist=speed");
+                            mk.Send("=.proplist=rx-bytes");
+                            mk.Send("=.proplist=tx-bytes");
+                            mk.Send("=.proplist=rx-packet");
+                            mk.Send("=.proplist=tx-packet");
+                            mk.Send(".tag=ethernet", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKethernet mKethernet = new MKethernet();
+                                    foreach (var d in GetDictionary(s))
                                     {
-                                        bandwidth = true;
-                                        break;
+                                        GetEthernetInfo(d.Key, d.Value, ref mKethernet);
+                                    }
+                                    Console.WriteLine("IP地址:{0},端口:{1},速度:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "wireless":
+                            #region
+                            mk.Send("/interface/wireless/registration-table/print");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send("=.proplist=mac-address");
+                            mk.Send("=.proplist=rx-rate");
+                            mk.Send("=.proplist=tx-rate");
+                            mk.Send("=.proplist=rx-ccq");
+                            mk.Send("=.proplist=tx-ccq");
+                            mk.Send("=.proplist=signal-to-noise");
+                            mk.Send("=.proplist=signal-strength");
+                            mk.Send("=.proplist=signal-strength-ch0");
+                            mk.Send("=.proplist=signal-strength-ch1");
+                            mk.Send("=.proplist=tx-signal-strength");
+                            mk.Send("=.proplist=tx-signal-strength-ch0");
+                            mk.Send("=.proplist=tx-signal-strength-ch1");
+                            mk.Send(".tag=wireless", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKwireless mKwireless = new MKwireless();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetWirelessInfo(d.Key, d.Value, ref mKwireless);
+                                    }
+                                    Console.WriteLine("IP地址:{0},Mac地址:{1},时间:{2},Rx/Tx-Rate:{3}/{4},Rx/Tx-CCQ:{5}/{6},STN:{7}", IpAddr, mKwireless.MacAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "capsman":
+                            break;
+                        case "resource":
+                            mk.Send("/system/resource/print");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send("=.proplist=version");
+                            mk.Send("=.proplist=cpu-load");
+                            mk.Send("=.proplist=free-memory");
+                            mk.Send("=.proplist=total-memory");
+                            mk.Send("=.proplist=free-hdd-space");
+                            mk.Send("=.proplist=total-hdd-space");
+                            mk.Send(".tag=resource", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKresource mKresource = new MKresource();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetResourceInfo(d.Key, d.Value, ref mKresource);
+                                    }
+                                    double used_mem = ((Convert.ToDouble(mKresource.Total_Memory) - Convert.ToDouble(mKresource.Free_Memory)) / Convert.ToDouble(mKresource.Total_Memory));
+                                    double used_hdd = ((Convert.ToDouble(mKresource.Total_Hdd_Space) - Convert.ToDouble(mKresource.Free_Hdd_Space)) / Convert.ToDouble(mKresource.Total_Hdd_Space));
+                                    Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, used_mem, used_hdd);
+                                }
+                            }
+                            break;
+                        case "romon":
+                            mk.Send("/tool/romon/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=romon", true);
+                            bool romonFlag = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value != "true")
+                                            {
+                                                romonFlag = true;
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-                    if (bandwidth)
-                    {
-                        mk.Send("/tool/bandwidth-server/set");
-                        mk.Send("=enabled=no");
-                        mk.Send("=authenticate=no");
-                        mk.Send(".tag=bandwidth", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
+                            if (romonFlag)
                             {
-                                Console.WriteLine("IP地址:{0},Bandwidth", IpAddr);
-                            }
-                        }
-                    }
-                    mk.Send("/tool/mac-server/print");
-                    mk.Send("=.proplist=allowed-interface-list");
-                    mk.Send(".tag=mac-server", true);
-                    bool mac_server = false;
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            foreach(var d in GetDictionary(s))
-                            {
-                                if(d.Key == "allowed-interface-list")
+                                mk.Send("/tool/romon/set");
+                                mk.Send("=enabled=yes");
+                                mk.Send(".tag=romon", true);
+                                foreach (string s in mk.Read())
                                 {
-                                    if(d.Value != "none")
+                                    if (s.StartsWith("!done"))
                                     {
-                                        mac_server = true;
-                                        break;
+                                        Console.WriteLine("IP地址:{0},RoMon", IpAddr);
                                     }
                                 }
                             }
-                        }
-                    }
-                    if (mac_server)
-                    {
-                        mk.Send("/tool/mac-server/set");
-                        mk.Send("=allowed-interface-list=none");
-                        mk.Send(".tag=mac-server", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
+                            break;
+                        case "health":
+                            mk.Send("/system/health/print");
+                            mk.Send(".tag=health", true);
+                            foreach (string s in mk.Read())
                             {
-                                Console.WriteLine("IP地址:{0},Mac-Server", IpAddr);
-                            }
-                        }
-                    }
-                    mk.Send("/tool/mac-server/mac-winbox/print");
-                    mk.Send("=.proplist=allowed-interface-list");
-                    mk.Send(".tag=mac-winbox", true);
-                    bool mac_winbox = false;
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            foreach(var d in GetDictionary(s))
-                            {
-                                if(d.Key == "allowed-interface-list")
+                                if (s.StartsWith("!re"))
                                 {
-                                    if(d.Value != "none")
+                                    MKhealth mKhealth = new MKhealth();
+                                    foreach (var d in GetDictionary(s))
                                     {
-                                        mac_winbox = true;
-                                        break;
+                                        GetHealthInfo(d.Key, d.Value, ref mKhealth);
                                     }
+                                    Console.WriteLine("IP地址:{0},电压:{1}V,温度:{2}℃", IpAddr, mKhealth.Voltage, mKhealth.Temperature);
                                 }
                             }
-                        }
-                    }
-                    if (mac_winbox)
-                    {
-                        mk.Send("/tool/mac-server/mac-winbox/set");
-                        mk.Send("=allowed-interface-list=none");
-                        mk.Send(".tag=mac-winbox", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
-                            {
-                                Console.WriteLine("IP地址:{0},Mac-Winbox", IpAddr);
-                            }
-                        }
-                    }
-                    mk.Send("/tool/mac-server/ping/print");
-                    mk.Send("=.proplist=enabled");
-                    mk.Send(".tag=mac-ping", true);
-                    bool mac_ping = false;
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            foreach(var d in GetDictionary(s))
-                            {
-                                if(d.Key == "enabled")
-                                {
-                                    if(d.Value == "true")
-                                    {
-                                        mac_ping = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (mac_ping)
-                    {
-                        mk.Send("/tool/mac-server/ping/set");
-                        mk.Send("=enabled=no");
-                        mk.Send(".tag=mac-ping", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
-                            {
-                                Console.WriteLine("IP地址:{0},Mac-Ping", IpAddr);
-                            }
-                        }
-                    }
-                    //
-                    mk.Send("/system/watchdog/set");
-                    mk.Send("=watchdog-timer=no");
-                    mk.Send(".tag=watchdog", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},Watchdog", IpAddr);
-                        }
-                    }
-                    mk.Send("/ip/cloud/set");
-                    mk.Send("=ddns-enabled=yes");
-                    //mk.Send("=update-time=yes");
-                    //mk.Send("=ddns-uptime-interval=1m");
-                    mk.Send(".tag=cloud", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},Cloud", IpAddr);
-                        }
-                    }
-                    mk.Send("/ip/cloud/advanced/set");
-                    mk.Send("=use-local-address=yes");
-                    mk.Send(".tag=cloud-advanced", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},Advanced", IpAddr);
-                        }
-                    }
-                    mk.Send("/ip/service/print");
-                    mk.Send("?name=www-ssl");
-                    mk.Send("=.proplist=.id");
-                    mk.Send(".tag=service-wwwssl", true);
-                    string wwwssl_id = "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            wwwssl_id = s.Substring(22);
-                        }
-                    }
-                    mk.Send("/ip/service/set");
-                    mk.Send(wwwssl_id);
-                    mk.Send("=disabled=yes");
-                    mk.Send(".tag=wwwssl", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
-                        }
-                    }
-                    //
-                    mk.Send("/ip/service/print");
-                    mk.Send("?name=www");
-                    mk.Send("=.proplist=.id");
-                    mk.Send(".tag=service-www", true);
-                    string www_id = "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            www_id = s.Substring(19);
-                        }
-                    }
-                    mk.Send("/ip/service/set");
-                    mk.Send(www_id);
-                    mk.Send("=disabled=yes");
-                    mk.Send(".tag=www", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},www", IpAddr);
-                        }
-                    }
-                    //
-                    mk.Send("/ip/service/print");
-                    mk.Send("?name=telnet");
-                    mk.Send("=.proplist=.id");
-                    mk.Send(".tag=service-telnet", true);
-                    string telnet_id = "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            telnet_id = s.Substring(22);
-                        }
-                    }
-                    mk.Send("/ip/service/set");
-                    mk.Send(telnet_id);
-                    mk.Send("=disabled=yes");
-                    mk.Send(".tag=telnet", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},telnet", IpAddr);
-                        }
-                    }
-                    //
-                    mk.Send("/ip/service/print");
-                    mk.Send("?name=ssh");
-                    mk.Send("=.proplist=.id");
-                    mk.Send(".tag=service-ssh", true);
-                    string ssh_id= "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            ssh_id = s.Substring(19);
-                        }
-                    }
-                    mk.Send("/ip/service/set");
-                    mk.Send(ssh_id);
-                    mk.Send("=disabled=yes");
-                    mk.Send(".tag=ssh", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},ssh", IpAddr);
-                        }
-                    }
-                    //
-                    mk.Send("/ip/service/print");
-                    mk.Send("?name=ftp");
-                    mk.Send("=.proplist=.id");
-                    mk.Send(".tag=service-ftp", true);
-                    string ftp_id = "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            ftp_id = s.Substring(19);
-                        }
-                    }
-                    mk.Send("/ip/service/set");
-                    mk.Send(ftp_id);
-                    mk.Send("=disabled=yes");
-                    mk.Send(".tag=ftp", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},ftp", IpAddr);
-                        }
-                    }
-                    //
-                    mk.Send("/ip/service/print");
-                    mk.Send("?name=api-ssl");
-                    mk.Send("=.proplist=.id");
-                    mk.Send(".tag=service-apissl", true);
-                    string apissl_id = "";
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            apissl_id = s.Substring(22);
-                        }
-                    }
-                    mk.Send("/ip/service/set");
-                    mk.Send(apissl_id);
-                    mk.Send("=disabled=yes");
-                    mk.Send(".tag=apissl", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},api-ssl", IpAddr);
-                        }
-                    }
-                }
-                if (neighbor)
-                {
-                    mk.Send("/ip/neighbor/discovery-settings/set");
-                    mk.Send("=discover-interface-list=none");
-                    mk.Send(".tag=neighbor",true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址:{0},neighbor", IpAddr);
-                        }
-                    }
-                }
-                if (ethernet)
-                {
-                    mk.Send("/interface/ethernet/print");
-                    mk.Send("=.proplist=name");
-                    mk.Send("=.proplist=speed");
-                    mk.Send("=.proplist=rx-bytes");
-                    mk.Send("=.proplist=tx-bytes");
-                    mk.Send("=.proplist=rx-packet");
-                    mk.Send("=.proplist=tx-packet");
-                    mk.Send(".tag=ethernet", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            MKethernet mKethernet = new MKethernet();
-                            foreach (var d in GetDictionary(s))
-                            {
-                                GetEthernetInfo(d.Key, d.Value, ref mKethernet);
-                            }
-                            Console.WriteLine("IP地址:{0},端口:{1},速度:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
-                        }
-                    }
-                }
-                if (wireless)
-                {
-                    mk.Send("/interface/wireless/registration-table/print");
-                    mk.Send("=.proplist=uptime");
-                    mk.Send("=.proplist=mac-address");
-                    mk.Send("=.proplist=rx-rate");
-                    mk.Send("=.proplist=tx-rate");
-                    mk.Send("=.proplist=rx-ccq");
-                    mk.Send("=.proplist=tx-ccq");
-                    mk.Send("=.proplist=signal-to-noise");
-                    mk.Send("=.proplist=signal-strength");
-                    mk.Send("=.proplist=signal-strength-ch0");
-                    mk.Send("=.proplist=signal-strength-ch1");
-                    mk.Send("=.proplist=tx-signal-strength");
-                    mk.Send("=.proplist=tx-signal-strength-ch0");
-                    mk.Send("=.proplist=tx-signal-strength-ch1");
-                    mk.Send(".tag=wireless",true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            MKwireless mKwireless = new MKwireless();
-                            foreach (var d in GetDictionary(s))
-                            {
-                                GetWirelessInfo(d.Key, d.Value, ref mKwireless);
-                            }
-                            Console.WriteLine("IP地址:{0},Mac地址:{1},时间:{2},Rx/Tx-Rate:{3}/{4},Rx/Tx-CCQ:{5}/{6},STN:{7}", IpAddr, mKwireless.MacAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
-                        }
-                    }
-                }
-                if (resource)
-                {
-                    mk.Send("/system/resource/print");
-                    mk.Send("=.proplist=uptime");
-                    mk.Send("=.proplist=version");
-                    mk.Send("=.proplist=cpu-load");
-                    mk.Send("=.proplist=free-memory");
-                    mk.Send("=.proplist=total-memory");
-                    mk.Send("=.proplist=free-hdd-space");
-                    mk.Send("=.proplist=total-hdd-space");
-                    mk.Send(".tag=resource", true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            MKresource mKresource = new MKresource();
-                            foreach (var d in GetDictionary(s))
-                            {
-                                GetResourceInfo(d.Key, d.Value, ref mKresource); 
-                            }
-                            double used_mem = ((Convert.ToDouble(mKresource.Total_Memory) - Convert.ToDouble(mKresource.Free_Memory))/Convert.ToDouble(mKresource.Total_Memory));
-                            double used_hdd = ((Convert.ToDouble(mKresource.Total_Hdd_Space) - Convert.ToDouble(mKresource.Free_Hdd_Space))/Convert.ToDouble(mKresource.Total_Hdd_Space));
-                            Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, used_mem, used_hdd);
-                        }
-                    }
-                }
-                if (romon)
-                {
-                    mk.Send("/tool/romon/print");
-                    mk.Send("=.proplist=enabled");
-                    mk.Send(".tag=romon", true);
-                    bool romonFlag = false;
-                    foreach (string s in mk.Read())
-                    {                      
-                        if (s.StartsWith("!re"))
-                        {
-                            foreach(var d in GetDictionary(s))
-                            {
-                                if(d.Key == "enabled")
-                                {
-                                    if(d.Value == "true")
-                                    {
-                                        romonFlag = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (romonFlag)
-                    {
-                        mk.Send("/tool/romon/set");
-                        mk.Send("=enabled=yes");
-                        mk.Send(".tag=romon", true);
-                        foreach (string s in mk.Read())
-                        {
-                            if (s.StartsWith("!done"))
-                            {
-                                Console.WriteLine("IP地址:{0},RoMon", IpAddr);
-                            }
-                        }
-                    }
-                }
-                if (health)
-                {
-                    mk.Send("/system/health/print");
-                    mk.Send(".tag=health",true);
-                    foreach(string s in mk.Read())
-                    {
-                        if(s.StartsWith("!re"))
-                        {
-                            MKhealth mKhealth = new MKhealth();
-                            foreach(var d in GetDictionary(s))
-                            {
-                                GetHealthInfo(d.Key, d.Value, ref mKhealth);
-                            }
-                            Console.WriteLine("IP地址:{0},电压:{1},温度:{2}", IpAddr, mKhealth.Voltage, mKhealth.Temperature);
-                        }
-                    }
-                }
-                if (capsman)
-                {
-                    mk.Send("/caps-man/registration-table/print");
-                    mk.Send("=.proplist=interface");
-                    mk.Send("=.proplist=ssid");
-                    mk.Send("=.proplist=mac-address");
-                    mk.Send("=.proplist=rx-rate");
-                    mk.Send("=.proplist=tx-rate");
-                    mk.Send("=.proplist=rx-signal");
-                    mk.Send("=.proplist=uptime");
-                    mk.Send(".tag=capsman",true);
-                    foreach (string s in mk.Read())
-                    {
-                        if (s.StartsWith("!re"))
-                        {
-                            MKcapsman mKcapsman = new MKcapsman();
-                            foreach (var d in GetDictionary(s))
-                            {
-                                GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
-                            }
-                            Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},",IpAddr,mKcapsman.SSID,mKcapsman.MacAddress,mKcapsman.Uptime,mKcapsman.RxRate,mKcapsman.TxRate);
-                        }
-                    }
-                }  
-                if (reboot)
-                {
-                    mk.Send("/system/reboot");
-                    mk.Send(".tag=reboot",true);
-                    foreach(string s in mk.Read())
-                    {
-                        if(s.StartsWith("!done"))
-                        {
-                            Console.WriteLine("IP地址{0},重启",IpAddr);
-                        }
+                            break;
                     }
                 }
             }

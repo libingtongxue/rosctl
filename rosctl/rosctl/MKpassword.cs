@@ -4,9 +4,8 @@ using System.Text;
 
 namespace rosctl
 {
-    class MKuser
+    class MKpassword
     {
-        public string Username { get; set; }
         public string Password { get; set; } = "";
     }
 }
