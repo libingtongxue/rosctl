@@ -6,7 +6,7 @@ namespace rosctl
 {
     class MKuser
     {
-        public string Username { get; set; }
+        public string Username { get; set; } = "admin";
         public string Password { get; set; } = "";
     }
 }

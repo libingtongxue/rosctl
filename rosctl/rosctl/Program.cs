@@ -351,6 +351,7 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --logging remote remote-port");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --snmp target contact location");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --ntp primary");
+            Console.WriteLine("rosctl 192.168.1.3 -u root -p password --ftp  address user password");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --new password --logging remote remote-port --ntp primary --snmp target contact location");
             Console.WriteLine("命令帮助:");
             Console.WriteLine("rosctl --help");
@@ -1156,9 +1157,9 @@ namespace rosctl
                         case "snmp":
                             mk.Send("/snmp/set");
                             mk.Send("=enabled=yes");
-                            mk.Send("=contact=" + (string.IsNullOrEmpty(snmp.Contact) ? "LiBing" : snmp.Contact));
-                            mk.Send("=location=" + (string.IsNullOrEmpty(snmp.Location) ? "18908035651" : snmp.Location));
-                            mk.Send("=trap-target=" + (string.IsNullOrEmpty(snmp.Target) ? "192.168.112.2" : snmp.Target));
+                            mk.Send("=contact=" + snmp.Contact);
+                            mk.Send("=location=" + snmp.Location);
+                            mk.Send("=trap-target=" + snmp.Target);
                             mk.Send("=trap-version=2");
                             mk.Send("=trap-generators=interface");
                             mk.Send(".tag=snmp", true);
@@ -1764,7 +1765,6 @@ namespace rosctl
                                     }
                                 }
                             }
-                            //
                             mk.Send("/system/watchdog/set");
                             mk.Send("=watchdog-timer=no");
                             mk.Send(".tag=watchdog", true);
@@ -1855,7 +1855,6 @@ namespace rosctl
                                     Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
                                 }
                             }
-                            //
                             mk.Send("/ip/service/print");
                             mk.Send("?name=www");
                             mk.Send("=.proplist=.id");
@@ -1893,7 +1892,6 @@ namespace rosctl
                                     Console.WriteLine("IP地址:{0},www", IpAddr);
                                 }
                             }
-                            //
                             mk.Send("/ip/service/print");
                             mk.Send("?name=telnet");
                             mk.Send("=.proplist=.id");
@@ -1931,7 +1929,6 @@ namespace rosctl
                                     Console.WriteLine("IP地址:{0},telnet", IpAddr);
                                 }
                             }
-                            //
                             mk.Send("/ip/service/print");
                             mk.Send("?name=ssh");
                             mk.Send("=.proplist=.id");
@@ -1969,7 +1966,6 @@ namespace rosctl
                                     Console.WriteLine("IP地址:{0},ssh", IpAddr);
                                 }
                             }
-                            //
                             mk.Send("/ip/service/print");
                             mk.Send("?name=ftp");
                             mk.Send("=.proplist=.id");
@@ -2007,7 +2003,6 @@ namespace rosctl
                                     Console.WriteLine("IP地址:{0},ftp", IpAddr);
                                 }
                             }
-                            //
                             mk.Send("/ip/service/print");
                             mk.Send("?name=api-ssl");
                             mk.Send("=.proplist=.id");
@@ -2214,10 +2209,36 @@ namespace rosctl
                                 mk.Send(".tag=romon", true);
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!done"))
                                     {
                                         Console.WriteLine("IP地址:{0},RoMon", IpAddr);
                                     }
+                                }
+                            }
+                            break;
+                        case "neighbor":
+                            mk.Send("/ip/neighbor/discovery-settings/set");
+                            mk.Send("=discover-interface-list=none");
+                            mk.Send(".tag=neighbor", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},neighbor", IpAddr);
                                 }
                             }
                             break;

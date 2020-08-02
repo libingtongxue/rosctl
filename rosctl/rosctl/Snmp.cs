@@ -6,8 +6,8 @@ namespace rosctl
 {
     class Snmp
     {
-        public string Contact { get; set; }
-        public string Location { get; set; }
+        public string Contact { get; set; } = "LiBing";
+        public string Location { get; set; } = "18908035651";
         public string Target { get; set; }
     }
 }
