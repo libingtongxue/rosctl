@@ -18,6 +18,7 @@ namespace rosctl
         static readonly MKpassword newPassword = new MKpassword();
         static readonly MKntp ntp = new MKntp();
         static readonly MKdns dns = new MKdns();
+        static readonly MKroute route = new MKroute();
         static readonly MKupdate update = new MKupdate();
         static readonly Ftp ftp = new Ftp();
         static void Main(string[] args)
@@ -107,7 +108,7 @@ namespace rosctl
                             else
                             {
                                 user.Username = args[t];
-                            }                            
+                            }
                         }
                     }
                     else
@@ -127,14 +128,14 @@ namespace rosctl
                         }
                         else
                         {
-                            if(args[t].StartsWith("-"))
+                            if (args[t].StartsWith("-"))
                             {
                                 Console.WriteLine("Password Is Null");
                             }
                             else
                             {
                                 user.Password = args[t];
-                            }                            
+                            }
                         }
                     }
                     else
@@ -182,7 +183,7 @@ namespace rosctl
                             logging.Remote = args[t];
                         }
                         int p = i + 2;
-                        if(p >= args.Length)
+                        if (p >= args.Length)
                         {
                             Console.WriteLine("Logging Port Is 514");
                         }
@@ -212,7 +213,7 @@ namespace rosctl
                             snmp.Target = args[t];
                         }
                         int c = i + 2;
-                        if(c >= args.Length)
+                        if (c >= args.Length)
                         {
                             Console.WriteLine("SNMP Contact Is Null");
                         }
@@ -221,7 +222,7 @@ namespace rosctl
                             snmp.Contact = args[c];
                         }
                         int l = i + 3;
-                        if(l >= args.Length)
+                        if (l >= args.Length)
                         {
                             Console.WriteLine("SNMP Location Is Null");
                         }
@@ -316,11 +317,11 @@ namespace rosctl
                 {
                     _commands.Add("health");
                 }
-                else if(args[i].StartsWith("--reboot"))
+                else if (args[i].StartsWith("--reboot"))
                 {
                     _commands.Add("reboot");
                 }
-                else if(args[i].StartsWith("--capsman"))
+                else if (args[i].StartsWith("--capsman"))
                 {
                     _commands.Add("capsman");
                 }
@@ -347,7 +348,7 @@ namespace rosctl
                 }
                 else if (args[i].StartsWith("--dns"))
                 {
-                    string st = args[i].Substring(8);
+                    string st = args[i].Substring(5);
                     if (st.Length == 0)
                     {
                         int t = i + 1;
@@ -365,6 +366,36 @@ namespace rosctl
                         dns.Address = st;
                     }
                     _commands.Add("dns");
+                }
+                else if (args[i].StartsWith("--route"))
+                {
+                    string st = args[i].Substring(7);
+                    if (st.Length == 0)
+                    {
+                        int t = i + 1;
+                        if (t >= args.Length)
+                        {
+                            Console.WriteLine("Route DstAddress Is Null");
+                        }
+                        else
+                        {
+                            route.DstAddress = args[t];
+                        }
+                        int g = i + 2;
+                        if(g >= args.Length)
+                        {
+                            Console.WriteLine("Route Gateway Is Null");
+                        }
+                        else
+                        {
+                            route.Gateway = args[g];
+                        }
+                    }
+                    else
+                    {
+                        route.DstAddress = st;
+                    }
+                    _commands.Add("route");
                 }
             }
         }
@@ -1697,6 +1728,28 @@ namespace rosctl
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址{0},DNS配置成功", IpAddr);
+                                }
+                            }
+                            break;
+                        case "route":
+                            mk.Send("/ip/route/add");
+                            mk.Send("=dst-address=" + route.DstAddress);
+                            mk.Send("=gateway=" + route.Gateway);
+                            mk.Send("=check-gateway=ping");
+                            mk.Send("=distance=1");
+                            mk.Send(".tag=route", true);
+                            foreach(string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址{0},路由配置成功", IpAddr);
                                 }
                             }
                             break;
