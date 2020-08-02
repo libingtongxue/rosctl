@@ -50,12 +50,12 @@ namespace rosctl
                     }
                 }
             }
-            else if(args.Length == 2)
+            else if (args.Length == 2)
             {
-                if(args[0] == "mndp" && args[1].StartsWith("--show"))
+                if (args[0] == "mndp" && args[1].StartsWith("--show"))
                 {
                     mndp.Start();
-                    TimerMndp.Change(0,3000);
+                    TimerMndp.Change(0, 3000);
                     while (!Console.KeyAvailable)
                     {
                         Thread.Sleep(100);
@@ -388,6 +388,13 @@ namespace rosctl
                             bool _bandwidth = false;
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     foreach (var d in GetDictionary(s))
@@ -411,6 +418,13 @@ namespace rosctl
                                 mk.Send(".tag=bandwidth", true);
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!done"))
                                     {
                                         Console.WriteLine("IP地址:{0},Bandwidth", IpAddr);
@@ -423,6 +437,13 @@ namespace rosctl
                             bool _mac_server = false;
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     foreach (var d in GetDictionary(s))
@@ -445,6 +466,13 @@ namespace rosctl
                                 mk.Send(".tag=mac-server", true);
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!done"))
                                     {
                                         Console.WriteLine("IP地址:{0},Mac-Server", IpAddr);
@@ -457,6 +485,13 @@ namespace rosctl
                             bool _mac_winbox = false;
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     foreach (var d in GetDictionary(s))
@@ -479,6 +514,13 @@ namespace rosctl
                                 mk.Send(".tag=mac-winbox", true);
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!done"))
                                     {
                                         Console.WriteLine("IP地址:{0},Mac-Winbox", IpAddr);
@@ -491,6 +533,13 @@ namespace rosctl
                             bool _mac_ping = false;
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     foreach (var d in GetDictionary(s))
@@ -513,6 +562,13 @@ namespace rosctl
                                 mk.Send(".tag=mac-ping", true);
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!done"))
                                     {
                                         Console.WriteLine("IP地址:{0},Mac-Ping", IpAddr);
@@ -525,6 +581,13 @@ namespace rosctl
                             mk.Send(".tag=watchdog", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},Watchdog", IpAddr);
@@ -537,6 +600,13 @@ namespace rosctl
                             mk.Send(".tag=cloud", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},Cloud", IpAddr);
@@ -547,6 +617,13 @@ namespace rosctl
                             mk.Send(".tag=cloud-advanced", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},Advanced", IpAddr);
@@ -559,6 +636,13 @@ namespace rosctl
                             string _wwwssl_id = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     _wwwssl_id = s.Substring(22);
@@ -570,6 +654,13 @@ namespace rosctl
                             mk.Send(".tag=wwwssl", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
@@ -583,6 +674,13 @@ namespace rosctl
                             string _www_id = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     _www_id = s.Substring(19);
@@ -594,6 +692,13 @@ namespace rosctl
                             mk.Send(".tag=www", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},www", IpAddr);
@@ -607,6 +712,13 @@ namespace rosctl
                             string _telnet_id = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     _telnet_id = s.Substring(22);
@@ -618,6 +730,13 @@ namespace rosctl
                             mk.Send(".tag=telnet", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},telnet", IpAddr);
@@ -631,6 +750,13 @@ namespace rosctl
                             string _ssh_id = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     _ssh_id = s.Substring(19);
@@ -642,6 +768,13 @@ namespace rosctl
                             mk.Send(".tag=ssh", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},ssh", IpAddr);
@@ -655,6 +788,13 @@ namespace rosctl
                             string _ftp_id = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     _ftp_id = s.Substring(19);
@@ -666,6 +806,13 @@ namespace rosctl
                             mk.Send(".tag=ftp", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},ftp", IpAddr);
@@ -679,6 +826,13 @@ namespace rosctl
                             string _apissl_id = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     _apissl_id = s.Substring(22);
@@ -690,6 +844,13 @@ namespace rosctl
                             mk.Send(".tag=apissl", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},api-ssl", IpAddr);
@@ -705,6 +866,13 @@ namespace rosctl
                             mk.Send(".tag=password", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},Password", IpAddr);
@@ -722,6 +890,13 @@ namespace rosctl
                             string _port = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     foreach (var d in GetDictionary(s))
@@ -748,6 +923,13 @@ namespace rosctl
                                 mk.Send(".tag=action", true);
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!done"))
                                     {
                                         Console.WriteLine("IP地址:{0},Action-Add", IpAddr);
@@ -762,6 +944,13 @@ namespace rosctl
                                 bool warning = true;
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!re"))
                                     {
                                         warning = false;
@@ -775,6 +964,13 @@ namespace rosctl
                                     mk.Send(".tag=warning", true);
                                     foreach (string s in mk.Read())
                                     {
+                                        if (s.StartsWith("!trap"))
+                                        {
+                                            foreach (var t in GetDictionary(s))
+                                            {
+                                                Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                            }
+                                        }
                                         if (s.StartsWith("!done"))
                                         {
                                             Console.WriteLine("IP地址:{0},Logging-warning", IpAddr);
@@ -790,6 +986,13 @@ namespace rosctl
                                 bool error = true;
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!re"))
                                     {
                                         error = false;
@@ -803,6 +1006,13 @@ namespace rosctl
                                     mk.Send(".tag=error", true);
                                     foreach (string s in mk.Read())
                                     {
+                                        if (s.StartsWith("!trap"))
+                                        {
+                                            foreach (var t in GetDictionary(s))
+                                            {
+                                                Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                            }
+                                        }
                                         if (s.StartsWith("!done"))
                                         {
                                             Console.WriteLine("IP地址:{0},Logging-Error", IpAddr);
@@ -818,6 +1028,13 @@ namespace rosctl
                                 bool info = true;
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!re"))
                                     {
                                         info = false;
@@ -831,6 +1048,13 @@ namespace rosctl
                                     mk.Send(".tag=info", true);
                                     foreach (string s in mk.Read())
                                     {
+                                        if (s.StartsWith("!trap"))
+                                        {
+                                            foreach (var t in GetDictionary(s))
+                                            {
+                                                Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                            }
+                                        }
                                         if (s.StartsWith("!done"))
                                         {
                                             Console.WriteLine("IP地址:{0},Logging-Info", IpAddr);
@@ -846,6 +1070,13 @@ namespace rosctl
                                 bool critical = true;
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!re"))
                                     {
                                         critical = false;
@@ -859,6 +1090,13 @@ namespace rosctl
                                     mk.Send(".tag=critical", true);
                                     foreach (string s in mk.Read())
                                     {
+                                        if (s.StartsWith("!trap"))
+                                        {
+                                            foreach (var t in GetDictionary(s))
+                                            {
+                                                Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                            }
+                                        }
                                         if (s.StartsWith("!done"))
                                         {
                                             Console.WriteLine("IP地址:{0},Logging-Critical", IpAddr);
@@ -902,6 +1140,13 @@ namespace rosctl
                             mk.Send(".tag=ntp", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},Ntp", IpAddr);
@@ -919,6 +1164,13 @@ namespace rosctl
                             mk.Send(".tag=snmp", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IpAddr:{0},Snmp", IpAddr);
@@ -932,6 +1184,13 @@ namespace rosctl
                             string identity = "";
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     foreach (var d in GetDictionary(s))
@@ -951,6 +1210,13 @@ namespace rosctl
                                 bool export = false;
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!done"))
                                     {
                                         export = true;
@@ -971,6 +1237,13 @@ namespace rosctl
                                         mk.Send(".tag=fetch", true);
                                         foreach (string s in mk.Read())
                                         {
+                                            if (s.StartsWith("!trap"))
+                                            {
+                                                foreach (var t in GetDictionary(s))
+                                                {
+                                                    Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                                }
+                                            }
                                             if (s.StartsWith("!re"))
                                             {
                                                 foreach (var d in GetDictionary(s))
@@ -991,6 +1264,13 @@ namespace rosctl
                                 string fileid = "";
                                 foreach (string s in mk.Read())
                                 {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
                                     if (s.StartsWith("!re"))
                                     {
                                         foreach (var d in GetDictionary(s))
@@ -1009,6 +1289,13 @@ namespace rosctl
                                     mk.Send(".tag=remove", true);
                                     foreach (string s in mk.Read())
                                     {
+                                        if (s.StartsWith("!trap"))
+                                        {
+                                            foreach (var t in GetDictionary(s))
+                                            {
+                                                Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                            }
+                                        }
                                         if (s.StartsWith("!done"))
                                         {
                                             Console.WriteLine("IP地址:{0},备份操作完成！", IpAddr);
@@ -1024,6 +1311,13 @@ namespace rosctl
                             mk.Send(".tag=neighbor", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!done"))
                                 {
                                     Console.WriteLine("IP地址:{0},neighbor", IpAddr);
@@ -1041,6 +1335,13 @@ namespace rosctl
                             mk.Send(".tag=ethernet", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     MKethernet mKethernet = new MKethernet();
@@ -1070,6 +1371,13 @@ namespace rosctl
                             mk.Send(".tag=wireless", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     MKwireless mKwireless = new MKwireless();
@@ -1093,6 +1401,13 @@ namespace rosctl
                             mk.Send(".tag=resource", true);
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     MKresource mKresource = new MKresource();
@@ -1113,6 +1428,770 @@ namespace rosctl
                             bool _romon = false;
                             foreach (string s in mk.Read())
                             {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value != "true")
+                                            {
+                                                _romon = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (_romon)
+                            {
+                                mk.Send("/tool/romon/set");
+                                mk.Send("=enabled=yes");
+                                mk.Send(".tag=romon", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},RoMon", IpAddr);
+                                    }
+                                }
+                            }
+                            break;
+                        case "health":
+                            mk.Send("/system/health/print");
+                            mk.Send(".tag=health", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKhealth mKhealth = new MKhealth();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetHealthInfo(d.Key, d.Value, ref mKhealth);
+                                    }
+                                    Console.WriteLine("IP地址:{0},电压:{1}V,温度:{2}℃", IpAddr, mKhealth.Voltage, mKhealth.Temperature);
+                                }
+                            }
+                            break;
+                        case "capsman":
+                            mk.Send("/caps-man/registration-table/print");
+                            mk.Send("=.proplist=interface");
+                            mk.Send("=.proplist=ssid");
+                            mk.Send("=.proplist=mac-address");
+                            mk.Send("=.proplist=rx-rate");
+                            mk.Send("=.proplist=tx-rate");
+                            mk.Send("=.proplist=rx-signal");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send(".tag=capsman", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKcapsman mKcapsman = new MKcapsman();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
+                                    }
+                                    Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},", IpAddr, mKcapsman.SSID, mKcapsman.MacAddress, mKcapsman.Uptime, mKcapsman.RxRate, mKcapsman.TxRate);
+                                }
+                            }
+                            break;
+                        case "reboot":
+                            mk.Send("/system/reboot");
+                            mk.Send(".tag=reboot", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址{0},重启", IpAddr);
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("IP地址:{0},账号密码错误", IpAddr);
+            }
+        }
+        private static void Mndp_Callback(object state)
+        {
+            Console.Clear();
+            Console.SetCursorPosition(0,0);
+            List<MKInfo> mikroTikInfos = mndp.GetMKInfos;
+            foreach(MKInfo m in mikroTikInfos)
+            { 
+                Console.WriteLine("MacAddr:{1},IPAddr:{0},Identity:{2},Version:{3},Platform:{4},Uptime:{5},Board:{6}", m.IPAddr, m.MacAddr, m.Identity, m.Version, m.Platform, m.Uptime, m.Board);
+            }
+        }
+        private static void Timer_MK(string IpAddr)
+        {
+            MK mk = new MK(IpAddr);
+            if (mk.Login(user.Username, user.Password))
+            {
+                foreach(string _command in _commands)
+                {
+                    switch (_command)
+                    {
+                        case "auto":
+                            #region
+                            mk.Send("/tool/bandwidth-server/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=bandwidth", true);
+                            bool _bandwidth = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value == "true")
+                                            {
+                                                _bandwidth = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (_bandwidth)
+                            {
+                                mk.Send("/tool/bandwidth-server/set");
+                                mk.Send("=enabled=no");
+                                mk.Send("=authenticate=no");
+                                mk.Send(".tag=bandwidth", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Bandwidth", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/print");
+                            mk.Send("=.proplist=allowed-interface-list");
+                            mk.Send(".tag=mac-server", true);
+                            bool _mac_server = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "allowed-interface-list")
+                                        {
+                                            if (d.Value != "none")
+                                            {
+                                                _mac_server = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (_mac_server)
+                            {
+                                mk.Send("/tool/mac-server/set");
+                                mk.Send("=allowed-interface-list=none");
+                                mk.Send(".tag=mac-server", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Server", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/mac-winbox/print");
+                            mk.Send("=.proplist=allowed-interface-list");
+                            mk.Send(".tag=mac-winbox", true);
+                            bool _mac_winbox = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "allowed-interface-list")
+                                        {
+                                            if (d.Value != "none")
+                                            {
+                                                _mac_winbox = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (_mac_winbox)
+                            {
+                                mk.Send("/tool/mac-server/mac-winbox/set");
+                                mk.Send("=allowed-interface-list=none");
+                                mk.Send(".tag=mac-winbox", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Winbox", IpAddr);
+                                    }
+                                }
+                            }
+                            mk.Send("/tool/mac-server/ping/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=mac-ping", true);
+                            bool _mac_ping = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        if (d.Key == "enabled")
+                                        {
+                                            if (d.Value == "true")
+                                            {
+                                                _mac_ping = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (_mac_ping)
+                            {
+                                mk.Send("/tool/mac-server/ping/set");
+                                mk.Send("=enabled=no");
+                                mk.Send(".tag=mac-ping", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址:{0},Mac-Ping", IpAddr);
+                                    }
+                                }
+                            }
+                            //
+                            mk.Send("/system/watchdog/set");
+                            mk.Send("=watchdog-timer=no");
+                            mk.Send(".tag=watchdog", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Watchdog", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/cloud/set");
+                            mk.Send("=ddns-enabled=yes");
+                            //mk.Send("=update-time=yes");
+                            //mk.Send("=ddns-uptime-interval=1m");
+                            mk.Send(".tag=cloud", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Cloud", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/cloud/advanced/set");
+                            mk.Send("=use-local-address=yes");
+                            mk.Send(".tag=cloud-advanced", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},Advanced", IpAddr);
+                                }
+                            }
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=www-ssl");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-wwwssl", true);
+                            string _wwwssl_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    _wwwssl_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(_wwwssl_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=wwwssl", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=www");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-www", true);
+                            string _www_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    _www_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(_www_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=www", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},www", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=telnet");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-telnet", true);
+                            string _telnet_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    _telnet_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(_telnet_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=telnet", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},telnet", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=ssh");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-ssh", true);
+                            string _ssh_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    _ssh_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(_ssh_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=ssh", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},ssh", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=ftp");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-ftp", true);
+                            string _ftp_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    _ftp_id = s.Substring(19);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(_ftp_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=ftp", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},ftp", IpAddr);
+                                }
+                            }
+                            //
+                            mk.Send("/ip/service/print");
+                            mk.Send("?name=api-ssl");
+                            mk.Send("=.proplist=.id");
+                            mk.Send(".tag=service-apissl", true);
+                            string _apissl_id = "";
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    _apissl_id = s.Substring(22);
+                                }
+                            }
+                            mk.Send("/ip/service/set");
+                            mk.Send(_apissl_id);
+                            mk.Send("=disabled=yes");
+                            mk.Send(".tag=apissl", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址:{0},api-ssl", IpAddr);
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "ethernet":
+                            #region
+                            mk.Send("/interface/ethernet/print");
+                            mk.Send("=.proplist=name");
+                            mk.Send("=.proplist=speed");
+                            mk.Send("=.proplist=rx-bytes");
+                            mk.Send("=.proplist=tx-bytes");
+                            mk.Send("=.proplist=rx-packet");
+                            mk.Send("=.proplist=tx-packet");
+                            mk.Send(".tag=ethernet", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKethernet mKethernet = new MKethernet();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetEthernetInfo(d.Key, d.Value, ref mKethernet);
+                                    }
+                                    Console.WriteLine("IP地址:{0},端口:{1},速度:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "wireless":
+                            #region
+                            mk.Send("/interface/wireless/registration-table/print");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send("=.proplist=mac-address");
+                            mk.Send("=.proplist=rx-rate");
+                            mk.Send("=.proplist=tx-rate");
+                            mk.Send("=.proplist=rx-ccq");
+                            mk.Send("=.proplist=tx-ccq");
+                            mk.Send("=.proplist=signal-to-noise");
+                            mk.Send("=.proplist=signal-strength");
+                            mk.Send("=.proplist=signal-strength-ch0");
+                            mk.Send("=.proplist=signal-strength-ch1");
+                            mk.Send("=.proplist=tx-signal-strength");
+                            mk.Send("=.proplist=tx-signal-strength-ch0");
+                            mk.Send("=.proplist=tx-signal-strength-ch1");
+                            mk.Send(".tag=wireless", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKwireless mKwireless = new MKwireless();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetWirelessInfo(d.Key, d.Value, ref mKwireless);
+                                    }
+                                    Console.WriteLine("IP地址:{0},Mac地址:{1},时间:{2},Rx/Tx-Rate:{3}/{4},Rx/Tx-CCQ:{5}/{6},STN:{7}", IpAddr, mKwireless.MacAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
+                                }
+                            }
+                            #endregion
+                            break;
+                        case "capsman":
+                            mk.Send("/caps-man/registration-table/print");
+                            mk.Send("=.proplist=interface");
+                            mk.Send("=.proplist=ssid");
+                            mk.Send("=.proplist=mac-address");
+                            mk.Send("=.proplist=rx-rate");
+                            mk.Send("=.proplist=tx-rate");
+                            mk.Send("=.proplist=rx-signal");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send(".tag=capsman", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKcapsman mKcapsman = new MKcapsman();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
+                                    }
+                                    Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},", IpAddr, mKcapsman.SSID, mKcapsman.MacAddress, mKcapsman.Uptime, mKcapsman.RxRate, mKcapsman.TxRate);
+                                }
+                            }
+                            break;
+                        case "resource":
+                            mk.Send("/system/resource/print");
+                            mk.Send("=.proplist=uptime");
+                            mk.Send("=.proplist=version");
+                            mk.Send("=.proplist=cpu-load");
+                            mk.Send("=.proplist=free-memory");
+                            mk.Send("=.proplist=total-memory");
+                            mk.Send("=.proplist=free-hdd-space");
+                            mk.Send("=.proplist=total-hdd-space");
+                            mk.Send(".tag=resource", true);
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKresource mKresource = new MKresource();
+                                    foreach (var d in GetDictionary(s))
+                                    {
+                                        GetResourceInfo(d.Key, d.Value, ref mKresource);
+                                    }
+                                    double used_mem = ((Convert.ToDouble(mKresource.Total_Memory) - Convert.ToDouble(mKresource.Free_Memory)) / Convert.ToDouble(mKresource.Total_Memory));
+                                    double used_hdd = ((Convert.ToDouble(mKresource.Total_Hdd_Space) - Convert.ToDouble(mKresource.Free_Hdd_Space)) / Convert.ToDouble(mKresource.Total_Hdd_Space));
+                                    Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, used_mem, used_hdd);
+                                }
+                            }
+                            break;
+                        case "romon":
+                            mk.Send("/tool/romon/print");
+                            mk.Send("=.proplist=enabled");
+                            mk.Send(".tag=romon", true);
+                            bool _romon = false;
+                            foreach (string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
                                 if (s.StartsWith("!re"))
                                 {
                                     foreach (var d in GetDictionary(s))
@@ -1147,539 +2226,13 @@ namespace rosctl
                             mk.Send(".tag=health", true);
                             foreach (string s in mk.Read())
                             {
-                                if (s.StartsWith("!re"))
+                                if (s.StartsWith("!trap"))
                                 {
-                                    MKhealth mKhealth = new MKhealth();
-                                    foreach (var d in GetDictionary(s))
+                                    foreach(var t in GetDictionary(s))
                                     {
-                                        GetHealthInfo(d.Key, d.Value, ref mKhealth);
-                                    }
-                                    Console.WriteLine("IP地址:{0},电压:{1},温度:{2}", IpAddr, mKhealth.Voltage, mKhealth.Temperature);
-                                }
-                            }
-                            break;
-                        case "capsman":
-                            mk.Send("/caps-man/registration-table/print");
-                            mk.Send("=.proplist=interface");
-                            mk.Send("=.proplist=ssid");
-                            mk.Send("=.proplist=mac-address");
-                            mk.Send("=.proplist=rx-rate");
-                            mk.Send("=.proplist=tx-rate");
-                            mk.Send("=.proplist=rx-signal");
-                            mk.Send("=.proplist=uptime");
-                            mk.Send(".tag=capsman", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    MKcapsman mKcapsman = new MKcapsman();
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
-                                    }
-                                    Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},", IpAddr, mKcapsman.SSID, mKcapsman.MacAddress, mKcapsman.Uptime, mKcapsman.RxRate, mKcapsman.TxRate);
-                                }
-                            }
-                            break;
-                        case "reoot":
-                            mk.Send("/system/reboot");
-                            mk.Send(".tag=reboot", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址{0},重启", IpAddr);
-                                }
-                            }
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("IP地址:{0},账号密码错误", IpAddr);
-            }
-        }
-        private static void Mndp_Callback(object state)
-        {
-            Console.Clear();
-            Console.SetCursorPosition(0,0);
-            List<MKInfo> mikroTikInfos = mndp.GetMKInfos;
-            foreach(MKInfo m in mikroTikInfos)
-            { 
-                Console.WriteLine("MacAddr:{1},IPAddr:{0},Identity:{2},Version:{3},Platform:{4},Uptime:{5},Board:{6}", m.IPAddr, m.MacAddr, m.Identity, m.Version, m.Platform, m.Uptime, m.Board);
-            }
-        }
-        private static void Timer_MK(string IpAddr)
-        {
-            MK mk = new MK(IpAddr);
-            if (mk.Login(user.Username, user.Password))
-            {
-                foreach(string command in _commands)
-                {
-                    switch (command)
-                    {
-                        case "auto":
-                            #region
-                            mk.Send("/tool/bandwidth-server/print");
-                            mk.Send("=.proplist=enabled");
-                            mk.Send(".tag=bandwidth", true);
-                            bool bandwidth = false;
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        if (d.Key == "enabled")
-                                        {
-                                            if (d.Value == "true")
-                                            {
-                                                bandwidth = true;
-                                                break;
-                                            }
-                                        }
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
                                     }
                                 }
-                            }
-                            if (bandwidth)
-                            {
-                                mk.Send("/tool/bandwidth-server/set");
-                                mk.Send("=enabled=no");
-                                mk.Send("=authenticate=no");
-                                mk.Send(".tag=bandwidth", true);
-                                foreach (string s in mk.Read())
-                                {
-                                    if (s.StartsWith("!done"))
-                                    {
-                                        Console.WriteLine("IP地址:{0},Bandwidth", IpAddr);
-                                    }
-                                }
-                            }
-                            mk.Send("/tool/mac-server/print");
-                            mk.Send("=.proplist=allowed-interface-list");
-                            mk.Send(".tag=mac-server", true);
-                            bool mac_server = false;
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        if (d.Key == "allowed-interface-list")
-                                        {
-                                            if (d.Value != "none")
-                                            {
-                                                mac_server = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (mac_server)
-                            {
-                                mk.Send("/tool/mac-server/set");
-                                mk.Send("=allowed-interface-list=none");
-                                mk.Send(".tag=mac-server", true);
-                                foreach (string s in mk.Read())
-                                {
-                                    if (s.StartsWith("!done"))
-                                    {
-                                        Console.WriteLine("IP地址:{0},Mac-Server", IpAddr);
-                                    }
-                                }
-                            }
-                            mk.Send("/tool/mac-server/mac-winbox/print");
-                            mk.Send("=.proplist=allowed-interface-list");
-                            mk.Send(".tag=mac-winbox", true);
-                            bool mac_winbox = false;
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        if (d.Key == "allowed-interface-list")
-                                        {
-                                            if (d.Value != "none")
-                                            {
-                                                mac_winbox = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (mac_winbox)
-                            {
-                                mk.Send("/tool/mac-server/mac-winbox/set");
-                                mk.Send("=allowed-interface-list=none");
-                                mk.Send(".tag=mac-winbox", true);
-                                foreach (string s in mk.Read())
-                                {
-                                    if (s.StartsWith("!done"))
-                                    {
-                                        Console.WriteLine("IP地址:{0},Mac-Winbox", IpAddr);
-                                    }
-                                }
-                            }
-                            mk.Send("/tool/mac-server/ping/print");
-                            mk.Send("=.proplist=enabled");
-                            mk.Send(".tag=mac-ping", true);
-                            bool mac_ping = false;
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        if (d.Key == "enabled")
-                                        {
-                                            if (d.Value == "true")
-                                            {
-                                                mac_ping = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (mac_ping)
-                            {
-                                mk.Send("/tool/mac-server/ping/set");
-                                mk.Send("=enabled=no");
-                                mk.Send(".tag=mac-ping", true);
-                                foreach (string s in mk.Read())
-                                {
-                                    if (s.StartsWith("!done"))
-                                    {
-                                        Console.WriteLine("IP地址:{0},Mac-Ping", IpAddr);
-                                    }
-                                }
-                            }
-                            //
-                            mk.Send("/system/watchdog/set");
-                            mk.Send("=watchdog-timer=no");
-                            mk.Send(".tag=watchdog", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},Watchdog", IpAddr);
-                                }
-                            }
-                            mk.Send("/ip/cloud/set");
-                            mk.Send("=ddns-enabled=yes");
-                            //mk.Send("=update-time=yes");
-                            //mk.Send("=ddns-uptime-interval=1m");
-                            mk.Send(".tag=cloud", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},Cloud", IpAddr);
-                                }
-                            }
-                            mk.Send("/ip/cloud/advanced/set");
-                            mk.Send("=use-local-address=yes");
-                            mk.Send(".tag=cloud-advanced", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},Advanced", IpAddr);
-                                }
-                            }
-                            mk.Send("/ip/service/print");
-                            mk.Send("?name=www-ssl");
-                            mk.Send("=.proplist=.id");
-                            mk.Send(".tag=service-wwwssl", true);
-                            string wwwssl_id = "";
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    wwwssl_id = s.Substring(22);
-                                }
-                            }
-                            mk.Send("/ip/service/set");
-                            mk.Send(wwwssl_id);
-                            mk.Send("=disabled=yes");
-                            mk.Send(".tag=wwwssl", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},www-ssl", IpAddr);
-                                }
-                            }
-                            //
-                            mk.Send("/ip/service/print");
-                            mk.Send("?name=www");
-                            mk.Send("=.proplist=.id");
-                            mk.Send(".tag=service-www", true);
-                            string www_id = "";
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    www_id = s.Substring(19);
-                                }
-                            }
-                            mk.Send("/ip/service/set");
-                            mk.Send(www_id);
-                            mk.Send("=disabled=yes");
-                            mk.Send(".tag=www", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},www", IpAddr);
-                                }
-                            }
-                            //
-                            mk.Send("/ip/service/print");
-                            mk.Send("?name=telnet");
-                            mk.Send("=.proplist=.id");
-                            mk.Send(".tag=service-telnet", true);
-                            string telnet_id = "";
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    telnet_id = s.Substring(22);
-                                }
-                            }
-                            mk.Send("/ip/service/set");
-                            mk.Send(telnet_id);
-                            mk.Send("=disabled=yes");
-                            mk.Send(".tag=telnet", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},telnet", IpAddr);
-                                }
-                            }
-                            //
-                            mk.Send("/ip/service/print");
-                            mk.Send("?name=ssh");
-                            mk.Send("=.proplist=.id");
-                            mk.Send(".tag=service-ssh", true);
-                            string ssh_id = "";
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    ssh_id = s.Substring(19);
-                                }
-                            }
-                            mk.Send("/ip/service/set");
-                            mk.Send(ssh_id);
-                            mk.Send("=disabled=yes");
-                            mk.Send(".tag=ssh", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},ssh", IpAddr);
-                                }
-                            }
-                            //
-                            mk.Send("/ip/service/print");
-                            mk.Send("?name=ftp");
-                            mk.Send("=.proplist=.id");
-                            mk.Send(".tag=service-ftp", true);
-                            string ftp_id = "";
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    ftp_id = s.Substring(19);
-                                }
-                            }
-                            mk.Send("/ip/service/set");
-                            mk.Send(ftp_id);
-                            mk.Send("=disabled=yes");
-                            mk.Send(".tag=ftp", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},ftp", IpAddr);
-                                }
-                            }
-                            //
-                            mk.Send("/ip/service/print");
-                            mk.Send("?name=api-ssl");
-                            mk.Send("=.proplist=.id");
-                            mk.Send(".tag=service-apissl", true);
-                            string apissl_id = "";
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    apissl_id = s.Substring(22);
-                                }
-                            }
-                            mk.Send("/ip/service/set");
-                            mk.Send(apissl_id);
-                            mk.Send("=disabled=yes");
-                            mk.Send(".tag=apissl", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!done"))
-                                {
-                                    Console.WriteLine("IP地址:{0},api-ssl", IpAddr);
-                                }
-                            }
-                            #endregion
-                            break;
-                        case "ethernet":
-                            #region
-                            mk.Send("/interface/ethernet/print");
-                            mk.Send("=.proplist=name");
-                            mk.Send("=.proplist=speed");
-                            mk.Send("=.proplist=rx-bytes");
-                            mk.Send("=.proplist=tx-bytes");
-                            mk.Send("=.proplist=rx-packet");
-                            mk.Send("=.proplist=tx-packet");
-                            mk.Send(".tag=ethernet", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    MKethernet mKethernet = new MKethernet();
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        GetEthernetInfo(d.Key, d.Value, ref mKethernet);
-                                    }
-                                    Console.WriteLine("IP地址:{0},端口:{1},速度:{2},Rx-Bytes:{3},Tx-Bytes:{4}", IpAddr, mKethernet.Name, mKethernet.Speed, mKethernet.Rx_Bytes, mKethernet.Tx_Bytes);
-                                }
-                            }
-                            #endregion
-                            break;
-                        case "wireless":
-                            #region
-                            mk.Send("/interface/wireless/registration-table/print");
-                            mk.Send("=.proplist=uptime");
-                            mk.Send("=.proplist=mac-address");
-                            mk.Send("=.proplist=rx-rate");
-                            mk.Send("=.proplist=tx-rate");
-                            mk.Send("=.proplist=rx-ccq");
-                            mk.Send("=.proplist=tx-ccq");
-                            mk.Send("=.proplist=signal-to-noise");
-                            mk.Send("=.proplist=signal-strength");
-                            mk.Send("=.proplist=signal-strength-ch0");
-                            mk.Send("=.proplist=signal-strength-ch1");
-                            mk.Send("=.proplist=tx-signal-strength");
-                            mk.Send("=.proplist=tx-signal-strength-ch0");
-                            mk.Send("=.proplist=tx-signal-strength-ch1");
-                            mk.Send(".tag=wireless", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    MKwireless mKwireless = new MKwireless();
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        GetWirelessInfo(d.Key, d.Value, ref mKwireless);
-                                    }
-                                    Console.WriteLine("IP地址:{0},Mac地址:{1},时间:{2},Rx/Tx-Rate:{3}/{4},Rx/Tx-CCQ:{5}/{6},STN:{7}", IpAddr, mKwireless.MacAddr, mKwireless.Uptime, mKwireless.Rx_Rate, mKwireless.Tx_Rate, mKwireless.Rx_CCQ, mKwireless.Tx_CCQ, mKwireless.Signal_To_Noise);
-                                }
-                            }
-                            #endregion
-                            break;
-                        case "capsman":
-                            mk.Send("/caps-man/registration-table/print");
-                            mk.Send("=.proplist=interface");
-                            mk.Send("=.proplist=ssid");
-                            mk.Send("=.proplist=mac-address");
-                            mk.Send("=.proplist=rx-rate");
-                            mk.Send("=.proplist=tx-rate");
-                            mk.Send("=.proplist=rx-signal");
-                            mk.Send("=.proplist=uptime");
-                            mk.Send(".tag=capsman", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    MKcapsman mKcapsman = new MKcapsman();
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
-                                    }
-                                    Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},", IpAddr, mKcapsman.SSID, mKcapsman.MacAddress, mKcapsman.Uptime, mKcapsman.RxRate, mKcapsman.TxRate);
-                                }
-                            }
-                            break;
-                        case "resource":
-                            mk.Send("/system/resource/print");
-                            mk.Send("=.proplist=uptime");
-                            mk.Send("=.proplist=version");
-                            mk.Send("=.proplist=cpu-load");
-                            mk.Send("=.proplist=free-memory");
-                            mk.Send("=.proplist=total-memory");
-                            mk.Send("=.proplist=free-hdd-space");
-                            mk.Send("=.proplist=total-hdd-space");
-                            mk.Send(".tag=resource", true);
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    MKresource mKresource = new MKresource();
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        GetResourceInfo(d.Key, d.Value, ref mKresource);
-                                    }
-                                    double used_mem = ((Convert.ToDouble(mKresource.Total_Memory) - Convert.ToDouble(mKresource.Free_Memory)) / Convert.ToDouble(mKresource.Total_Memory));
-                                    double used_hdd = ((Convert.ToDouble(mKresource.Total_Hdd_Space) - Convert.ToDouble(mKresource.Free_Hdd_Space)) / Convert.ToDouble(mKresource.Total_Hdd_Space));
-                                    Console.WriteLine("IP地址:{0},运行时间:{1},版本:{2},CPU:{3}%,内存:{4:P},闪存:{5:P}", IpAddr, mKresource.Uptime, mKresource.Version, mKresource.Cpu_Load, used_mem, used_hdd);
-                                }
-                            }
-                            break;
-                        case "romon":
-                            mk.Send("/tool/romon/print");
-                            mk.Send("=.proplist=enabled");
-                            mk.Send(".tag=romon", true);
-                            bool romonFlag = false;
-                            foreach (string s in mk.Read())
-                            {
-                                if (s.StartsWith("!re"))
-                                {
-                                    foreach (var d in GetDictionary(s))
-                                    {
-                                        if (d.Key == "enabled")
-                                        {
-                                            if (d.Value != "true")
-                                            {
-                                                romonFlag = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (romonFlag)
-                            {
-                                mk.Send("/tool/romon/set");
-                                mk.Send("=enabled=yes");
-                                mk.Send(".tag=romon", true);
-                                foreach (string s in mk.Read())
-                                {
-                                    if (s.StartsWith("!done"))
-                                    {
-                                        Console.WriteLine("IP地址:{0},RoMon", IpAddr);
-                                    }
-                                }
-                            }
-                            break;
-                        case "health":
-                            mk.Send("/system/health/print");
-                            mk.Send(".tag=health", true);
-                            foreach (string s in mk.Read())
-                            {
                                 if (s.StartsWith("!re"))
                                 {
                                     MKhealth mKhealth = new MKhealth();
