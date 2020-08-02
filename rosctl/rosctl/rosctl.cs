@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace rosctl
 {
-    class Program
+    class rosctl
     {
         static readonly Timer Timer= new Timer(Timer_Mndp_Callback, null, Timeout.Infinite, Timeout.Infinite);
         static readonly Timer TimerMndp = new Timer(Mndp_Callback,null,Timeout.Infinite,Timeout.Infinite);
@@ -382,7 +382,7 @@ namespace rosctl
                             route.DstAddress = args[t];
                         }
                         int g = i + 2;
-                        if(g >= args.Length)
+                        if (g >= args.Length)
                         {
                             Console.WriteLine("Route Gateway Is Null");
                         }
@@ -1653,7 +1653,7 @@ namespace rosctl
                                 {
                                     foreach(var d in GetDictionary(s))
                                     {
-                                        Console.WriteLine("{0},{1}", d.Key, d.Value);
+                                        Console.WriteLine("{0}:{1}", d.Key, d.Value);
                                         if(d.Key == "installed-version")
                                         {
                                             _installed_version = d.Value;
@@ -1667,7 +1667,6 @@ namespace rosctl
                             }
                             if(_installed_version != _latest_version)
                             {
-                                Console.WriteLine("正在下载......");
                                 mk.Send("/system/package/update/download");
                                 mk.Send(".tag=download", true);
                                 foreach(string s in mk.Read())
