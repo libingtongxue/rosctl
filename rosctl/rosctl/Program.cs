@@ -17,6 +17,7 @@ namespace rosctl
         static readonly MKlogging logging = new MKlogging();
         static readonly MKpassword newPassword = new MKpassword();
         static readonly MKntp ntp = new MKntp();
+        static readonly MKupdate update = new MKupdate();
         static readonly Ftp ftp = new Ftp();
         static void Main(string[] args)
         {
@@ -322,6 +323,27 @@ namespace rosctl
                 {
                     _commands.Add("capsman");
                 }
+                else if (args[i].StartsWith("--update"))
+                {
+                    string st = args[i].Substring(8);
+                    if (st.Length == 0)
+                    {
+                        int t = i + 1;
+                        if (t >= args.Length)
+                        {
+                            Console.WriteLine("Channel Is Null");
+                        }
+                        else
+                        {
+                            update.Channel = args[t];
+                        }
+                    }
+                    else
+                    {
+                        update.Channel = st;
+                    }
+                    _commands.Add("update");
+                }
             }
         }
         static void Help()
@@ -343,6 +365,7 @@ namespace rosctl
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --reboot");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --capsman");
             Console.WriteLine("rosctl 192.168.1.3 -u root -p password --romon");
+            Console.WriteLine("rosctl 192.168.1.3 -u root -p password --update long-term");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --resource");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4,192.168.112.5 -u root -p password --ethernet");
             Console.WriteLine("rosctl 192.168.1.3,192.168.112.4 -u root -p password --wireless");
@@ -1182,7 +1205,7 @@ namespace rosctl
                             #region
                             mk.Send("/system/identity/print");
                             mk.Send(".tag=identity", true);
-                            string identity = "";
+                            string _identity = "";
                             foreach (string s in mk.Read())
                             {
                                 if (s.StartsWith("!trap"))
@@ -1198,15 +1221,15 @@ namespace rosctl
                                     {
                                         if (d.Key == "name")
                                         {
-                                            identity = d.Value;
+                                            _identity = d.Value;
                                         }
                                     }
                                 }
                             }
-                            if (!string.IsNullOrEmpty(identity))
+                            if (!string.IsNullOrEmpty(_identity))
                             {
                                 mk.Send("/export");
-                                mk.Send("=file=" + identity); ;
+                                mk.Send("=file=" + _identity); ;
                                 mk.Send(".tag=export", true);
                                 bool export = false;
                                 foreach (string s in mk.Read())
@@ -1229,11 +1252,11 @@ namespace rosctl
                                     {
                                         mk.Send("/tool/fetch");
                                         mk.Send("=address=" + ftp.Address);
-                                        mk.Send("=src-path=" + identity + ".rsc");
+                                        mk.Send("=src-path=" + _identity + ".rsc");
                                         mk.Send("=user=" + ftp.Username);
                                         mk.Send("=password=" + ftp.Password);
                                         mk.Send("=mode=ftp");
-                                        mk.Send("=dst-path=" + identity + "." + DateTime.Now.ToShortDateString() + ".rsc");
+                                        mk.Send("=dst-path=" + _identity + "." + DateTime.Now.ToShortDateString() + ".rsc");
                                         mk.Send("=upload=yes");
                                         mk.Send(".tag=fetch", true);
                                         foreach (string s in mk.Read())
@@ -1259,10 +1282,10 @@ namespace rosctl
                                     }
                                 }
                                 mk.Send("/file/print");
-                                mk.Send("?name=" + identity + ".rsc");
+                                mk.Send("?name=" + _identity + ".rsc");
                                 mk.Send("=.proplist=.id");
                                 mk.Send(".tag=remove-id", true);
-                                string fileid = "";
+                                string _file_id = "";
                                 foreach (string s in mk.Read())
                                 {
                                     if (s.StartsWith("!trap"))
@@ -1278,7 +1301,7 @@ namespace rosctl
                                         {
                                             if (d.Key == ".id")
                                             {
-                                                fileid = d.Value;
+                                                _file_id = d.Value;
                                             }
                                         }
                                     }
@@ -1286,7 +1309,7 @@ namespace rosctl
                                 if (!string.IsNullOrEmpty("fileid"))
                                 {
                                     mk.Send("/file/remove");
-                                    mk.Send("=.id=" + fileid);
+                                    mk.Send("=.id=" + _file_id);
                                     mk.Send(".tag=remove", true);
                                     foreach (string s in mk.Read())
                                     {
@@ -1522,6 +1545,100 @@ namespace rosctl
                                         GetCapsmanInfo(d.Key, d.Value, ref mKcapsman);
                                     }
                                     Console.WriteLine("IP地址:{0},SSID:{1},Mac地址:{2},时间:{3},Rx-Rate/Tx-Rate:{4}/{5},", IpAddr, mKcapsman.SSID, mKcapsman.MacAddress, mKcapsman.Uptime, mKcapsman.RxRate, mKcapsman.TxRate);
+                                }
+                            }
+                            break;
+                        case "update":
+                            mk.Send("/system/package/update/set");
+                            mk.Send("=channel=" + update.Channel);
+                            mk.Send(".tag=channel", true);
+                            foreach(string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach(var d in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", d.Key, d.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!done"))
+                                {
+                                    Console.WriteLine("IP地址{0},Channel");
+                                }
+                            }
+                            mk.Send("/system/package/update/check-for-updates");
+                            mk.Send(".tag=update", true);
+                            string _installed_version = "";
+                            string _latest_version = "";
+                            foreach(string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    foreach(var d in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0},{1}", d.Key, d.Value);
+                                        if(d.Key == "installed-version")
+                                        {
+                                            _installed_version = d.Value;
+                                        }
+                                        if(d.Key == "latest-version")
+                                        {
+                                            _latest_version = d.Value;
+                                        }
+                                    }
+                                }
+                            }
+                            if(_installed_version != _latest_version)
+                            {
+                                Console.WriteLine("正在下载......");
+                                mk.Send("/system/package/update/download");
+                                mk.Send(".tag=download", true);
+                                foreach(string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        foreach(var d in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", d.Key, d.Value);
+                                        }
+                                    }
+                                }
+                                mk.Send("/system/package/update/install");
+                                mk.Send(".tag=install", true);
+                                foreach (string s in mk.Read())
+                                {
+                                    if (s.StartsWith("!trap"))
+                                    {
+                                        foreach (var t in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!re"))
+                                    {
+                                        foreach (var d in GetDictionary(s))
+                                        {
+                                            Console.WriteLine("{0},{1}", d.Key, d.Value);
+                                        }
+                                    }
+                                    if (s.StartsWith("!done"))
+                                    {
+                                        Console.WriteLine("IP地址{0}:升级完成", IpAddr);
+                                    }
                                 }
                             }
                             break;
