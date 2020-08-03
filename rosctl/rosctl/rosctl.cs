@@ -12,7 +12,6 @@ namespace rosctl
         static readonly List<string> IpAddrs = new List<string>();
         static readonly List<string> _commands = new List<string>();
         static readonly MKmndp mndp = new MKmndp();
-        static readonly Snmp snmp = new Snmp();
         static readonly MKuser user = new MKuser();
         static readonly MKlogging logging = new MKlogging();
         static readonly MKpassword newPassword = new MKpassword();
@@ -20,6 +19,7 @@ namespace rosctl
         static readonly MKdns dns = new MKdns();
         static readonly MKroute route = new MKroute();
         static readonly MKupdate update = new MKupdate();
+        static readonly Snmp snmp = new Snmp();
         static readonly Ftp ftp = new Ftp();
         static void Main(string[] args)
         {
@@ -258,7 +258,7 @@ namespace rosctl
                     }
                     _commands.Add("ntp");
                 }
-                else if (args[i].StartsWith("--ftp"))
+                else if (args[i].StartsWith("--fetch"))
                 {
                     string st = args[i].Substring(5);
                     if (st.Length == 0)
@@ -291,7 +291,7 @@ namespace rosctl
                             ftp.Password = args[l];
                         }
                     }
-                    _commands.Add("ftp");
+                    _commands.Add("fetch");
                 }
                 else if (args[i].StartsWith("--ethernet"))
                 {
@@ -1271,7 +1271,7 @@ namespace rosctl
                                 }
                             }
                             break;
-                        case "ftp":
+                        case "fetch":
                             #region
                             mk.Send("/system/identity/print");
                             mk.Send(".tag=identity", true);
@@ -1777,6 +1777,7 @@ namespace rosctl
             {
                 Console.WriteLine("IP地址:{0},账号密码错误", IpAddr);
             }
+            mk.Close();
         }
         private static void Mndp_Callback(object state)
         {
