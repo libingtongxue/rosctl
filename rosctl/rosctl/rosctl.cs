@@ -556,6 +556,7 @@ namespace rosctl
                                     }
                                 }
                             }
+                            /*
                             mk.Send("/tool/mac-server/mac-winbox/print");
                             mk.Send("=.proplist=allowed-interface-list");
                             mk.Send(".tag=mac-winbox", true);
@@ -604,6 +605,7 @@ namespace rosctl
                                     }
                                 }
                             }
+                            */
                             mk.Send("/tool/mac-server/ping/print");
                             mk.Send("=.proplist=enabled");
                             mk.Send(".tag=mac-ping", true);
