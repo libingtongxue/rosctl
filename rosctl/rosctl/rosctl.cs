@@ -325,6 +325,10 @@ namespace rosctl
                 {
                     _commands.Add("capsman");
                 }
+                else if (args[i].StartsWith("--ppp"))
+                {
+                    _commands.Add("ppp");
+                }
                 else if (args[i].StartsWith("--update"))
                 {
                     string st = args[i].Substring(8);
@@ -1620,6 +1624,29 @@ namespace rosctl
                                 }
                             }
                             break;
+                        case "ppp":
+                            mk.Send("/ppp/active/print");
+                            mk.Send(".tag=ppp", true);
+                            foreach(string s in mk.Read())
+                            {
+                                if (s.StartsWith("!trap"))
+                                {
+                                    foreach (var t in GetDictionary(s))
+                                    {
+                                        Console.WriteLine("{0}:{1}", t.Key, t.Value);
+                                    }
+                                }
+                                if (s.StartsWith("!re"))
+                                {
+                                    MKppp mKppp = new MKppp();
+                                    foreach(var d in GetDictionary(s))
+                                    {
+                                        GetPPPInfo(d.Key, d.Value, ref mKppp);
+                                    }
+                                    Console.WriteLine("IP地址:{0},用户名:{1},服务{2},Caller-ID:{3},地址{4},时间{5},编码{6}", IpAddr, mKppp.Name, mKppp.Service, mKppp.Caller_ID, mKppp.Address, mKppp.Uptime, mKppp.Encoding);
+                               }
+                            }
+                            break;
                         case "update":
                             mk.Send("/system/package/update/set");
                             mk.Send("=channel=" + update.Channel);
@@ -2503,6 +2530,30 @@ namespace rosctl
                 Console.WriteLine("IP地址:{0},账号密码错误", IpAddr);
             }
             mk.Close();
+        }
+        static void GetPPPInfo(string key ,string value,ref MKppp mKppp)
+        {
+            switch (key)
+            {
+                case "name":
+                    mKppp.Name = value;
+                    break;
+                case "service":
+                    mKppp.Service = value;
+                    break;
+                case "caller-id":
+                    mKppp.Caller_ID = value;
+                    break;
+                case "address":
+                    mKppp.Address = value;
+                    break;
+                case "uptime":
+                    mKppp.Uptime = value;
+                    break;
+                case "encoding":
+                    mKppp.Encoding = value;
+                    break;
+            }
         }
         static void GetCapsmanInfo(string key,string value,ref MKcapsman mKcapsman)
         {
